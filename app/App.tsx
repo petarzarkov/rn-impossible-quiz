@@ -2,29 +2,33 @@
 import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
-  View,
   StatusBar,
   ImageBackground,
-  ActivityIndicator,
   useColorScheme,
 } from "react-native";
-import { Quiz } from "./screens";
+import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { colors } from "./theme";
 import { requests } from "./services";
 import { localization } from "./config";
 import { base } from "./styles";
 import { QuestionParsed } from "./contracts";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { Quiz, Settings } from "./screens";
+
+const Tab = createBottomTabNavigator();
 
 const App = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const isDarkMode = useColorScheme() === "dark";
   const [lang, setLang] = useState<keyof typeof localization>("en");
   const [isLoading, setLoading] = useState(true);
   const [questions, setQuestions] = useState<QuestionParsed[] | null>(null);
+  const [numberOfQ, setNumberOfQ] = useState<number | "random">("random");
 
   const refreshQuestions = async () => {
     setLoading(true);
-    const newQuestions = await requests.fetchQuestions();
+    const newQuestions = await requests.fetchQuestions(numberOfQ);
     if (newQuestions) {
       setQuestions(newQuestions);
     }
@@ -33,7 +37,8 @@ const App = () => {
 
   useEffect(() => {
     refreshQuestions();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [numberOfQ]);
 
   return (
     <SafeAreaView
@@ -47,21 +52,75 @@ const App = () => {
         style={base.container}
       >
         <StatusBar barStyle="light-content" backgroundColor={colors.primary} />
-        {isLoading ? (
-          <View style={[base.container, base.horizontal]}>
-            <ActivityIndicator size="large" animating color={colors.accent} />
-          </View>
-        ) : (
-          <Quiz
-            {...{
-              lang,
-              setLang,
-              questions: questions as unknown as QuestionParsed[],
-              refreshQuestions,
-              localization: localization[lang],
+        <NavigationContainer
+          theme={{
+            dark: isDarkMode,
+            colors: {
+              ...DefaultTheme.colors,
+              background: "transparent",
+              primary: colors.primary,
+            },
+          }}
+        >
+          <Tab.Navigator
+            screenOptions={{
+              headerShown: false,
+              tabBarActiveTintColor: colors.accent,
+              tabBarInactiveTintColor: colors.lightBlue,
             }}
-          />
-        )}
+          >
+            <Tab.Screen
+              name="Quiz"
+              options={{
+                tabBarLabel: "Quiz",
+                tabBarIcon: ({ color, size }) => (
+                  <FontAwesome
+                    name="question-circle"
+                    color={color}
+                    size={size}
+                  />
+                ),
+              }}
+            >
+              {props => (
+                <Quiz
+                  {...props}
+                  {...{
+                    isLoading,
+                    lang,
+                    setLang,
+                    questions: questions as unknown as QuestionParsed[],
+                    refreshQuestions,
+                    localization: localization[lang],
+                  }}
+                />
+              )}
+            </Tab.Screen>
+            <Tab.Screen
+              name="Settings"
+              options={{
+                tabBarLabel: "Settings",
+                tabBarIcon: ({ color, size }) => (
+                  <Ionicons name="settings" color={color} size={size} />
+                ),
+              }}
+            >
+              {props => (
+                <Settings
+                  {...props}
+                  {...{
+                    localization: localization[lang],
+                    lang,
+                    setLang,
+                    numberOfQ,
+                    setNumberOfQ,
+                    refreshQuestions,
+                  }}
+                />
+              )}
+            </Tab.Screen>
+          </Tab.Navigator>
+        </NavigationContainer>
       </ImageBackground>
     </SafeAreaView>
   );

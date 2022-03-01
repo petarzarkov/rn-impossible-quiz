@@ -10,6 +10,8 @@ export const localization = {
     newGameText: "Нова игра",
     dead: "Умре :/",
     score: "Резултат",
+    langSetting: "Избери език",
+    numberOfQuestions: "Брой въпроси",
   },
   en: {
     difficulty: "Difficulty",
@@ -22,5 +24,7 @@ export const localization = {
     newGameText: "New game",
     dead: "You died :/",
     score: "Score",
+    langSetting: "Choose language",
+    numberOfQuestions: "Number of questions",
   },
 };

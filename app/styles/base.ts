@@ -10,4 +10,9 @@ export const base = StyleSheet.create({
     justifyContent: "space-around",
     padding: 10,
   },
+  containerTab: {
+    flex: 1,
+    paddingVertical: 15,
+    paddingHorizontal: 16,
+  },
 });

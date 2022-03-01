@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Animated, ScrollView, StyleSheet } from "react-native";
-import { Button, ProgressBar, Question, Score, PickLang } from "../components";
+import { Animated, ScrollView, View, ActivityIndicator } from "react-native";
+import { Button, ProgressBar, Question, Score } from "../components";
 import { QuestionParsed } from "../contracts";
+import { base } from "../styles";
+import { colors } from "../theme";
 
 export const Quiz: React.FC<{
-  lang: "en" | "bg";
-  setLang: (lang: "en" | "bg") => void;
   questions: QuestionParsed[];
+  isLoading: boolean;
   refreshQuestions: () => void;
   localization: Record<string, string>;
-}> = ({ lang, setLang, questions, refreshQuestions, localization }) => {
-  const defaultLives = Math.round(questions.length / 3) || 1;
+}> = ({ questions, refreshQuestions, localization, isLoading }) => {
+  const defaultLives = Math.round((questions?.length || 3) / 3) || 1;
   const [currQIndx, setCurrQIndx] = useState(0);
   const [currAnswer, setCurrAnswer] = useState<string | null>(null);
   const [correctAnswer, setCorrectOption] = useState<string | null>(null);
@@ -96,9 +97,12 @@ export const Quiz: React.FC<{
     }).start();
   };
 
-  return (
-    <ScrollView style={styles.quiz}>
-      <PickLang {...{ lang, setLang }} />
+  return isLoading ? (
+    <View style={[base.container, base.horizontal]}>
+      <ActivityIndicator size="large" animating color={colors.accent} />
+    </View>
+  ) : (
+    <ScrollView style={base.containerTab}>
       <ProgressBar {...{ progress, upper: questions.length }} />
       <Question
         {...{
@@ -144,11 +148,3 @@ export const Quiz: React.FC<{
     </ScrollView>
   );
 };
-
-export const styles = StyleSheet.create({
-  quiz: {
-    flex: 1,
-    paddingVertical: 15,
-    paddingHorizontal: 16,
-  },
-});
