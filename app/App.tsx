@@ -84,10 +84,10 @@ const App = () => {
           <Tab.Navigator
             screenOptions={{
               tabBarStyle: { borderTopWidth: 0 },
-              tabBarActiveBackgroundColor: colors.primaryLight,
+              tabBarActiveBackgroundColor: colors.background,
               tabBarInactiveBackgroundColor: colors.primary,
               headerShown: false,
-              tabBarActiveTintColor: colors.accent,
+              tabBarActiveTintColor: colors.primary,
               tabBarInactiveTintColor: colors.primaryLight,
             }}
           >

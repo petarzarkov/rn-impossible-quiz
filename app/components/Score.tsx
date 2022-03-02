@@ -3,6 +3,7 @@ import React from "react";
 import { View, Text, Modal } from "react-native";
 import { Colors, QuestionParsed } from "../contracts";
 import { Button } from "./Button";
+import ConfettiCannon from "react-native-confetti-cannon";
 
 export const Score: React.FC<{
   colors: Colors;
@@ -27,6 +28,7 @@ export const Score: React.FC<{
   localization,
   colors,
 }) => {
+  const hasWon = questions.length === score || lives > 0;
   return (
     <Modal animationType="slide" transparent={true} visible={showScoreModal}>
       <View
@@ -36,6 +38,9 @@ export const Score: React.FC<{
           justifyContent: "center",
         }}
       >
+        {hasWon ? (
+          <ConfettiCannon count={200} origin={{ x: -10, y: 0 }} />
+        ) : null}
         <View
           style={{
             backgroundColor: colors.background,
@@ -46,11 +51,7 @@ export const Score: React.FC<{
           }}
         >
           <Text style={{ fontSize: 30, fontWeight: "bold" }}>
-            {score === questions.length
-              ? localization.congratz
-              : lives === 0
-              ? localization.dead
-              : localization.fail}
+            {hasWon ? localization.congratz : localization.fail}
           </Text>
 
           <View
@@ -64,11 +65,10 @@ export const Score: React.FC<{
             <Text
               style={{
                 fontSize: 30,
-                color:
-                  score === questions.length ? colors.success : colors.error,
+                color: hasWon ? colors.success : colors.error,
               }}
             >
-              {score}
+              {`${score} `}
             </Text>
             <Text
               style={{

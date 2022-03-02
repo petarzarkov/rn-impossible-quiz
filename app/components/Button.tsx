@@ -30,8 +30,8 @@ export const Button: React.FC<{
           // eslint-disable-next-line react-native/no-inline-styles
           {
             width: "100%",
-            backgroundColor: colors.accent,
-            borderColor: colors.primaryLight,
+            backgroundColor: colors.primaryLight,
+            borderColor: colors.primary,
             padding: 20,
             borderRadius: 5,
           },
@@ -41,7 +41,7 @@ export const Button: React.FC<{
         <Text
           style={[
             // eslint-disable-next-line react-native/no-inline-styles
-            { fontSize: 20, color: colors.text, textAlign: "center" },
+            { fontSize: 20, color: colors.background, textAlign: "center" },
             btnTextStyle && btnTextStyle,
           ]}
         >

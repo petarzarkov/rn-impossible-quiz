@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, { useState, useEffect, useRef } from "react";
 import { Animated, ScrollView, View, ActivityIndicator } from "react-native";
 import { Button, ProgressBar, Question, Score } from "../components";
@@ -74,7 +75,7 @@ export const Quiz: React.FC<{
   const handleNext = () => {
     Animated.timing(progress, {
       toValue: currQIndx + 1,
-      duration: 1000,
+      duration: 500,
       useNativeDriver: false,
     }).start();
     if (currQIndx === questions.length - 1) {
@@ -91,24 +92,24 @@ export const Quiz: React.FC<{
   };
 
   const restartQuiz = () => {
+    setLives(defaultLives);
+    setLivesIcons([...Array(defaultLives).keys()].map(_icon => "heart"));
+
+    setCurrQIndx(0);
+    setScore(0);
+
+    setCurrAnswer(null);
+    setCorrectOption(null);
+    setAnswersDisabled(false);
+    setShowNextButton(false);
+    setShowScoreModal(false);
     return new Promise(resolve => {
       Animated.timing(progress, {
         toValue: 0,
-        duration: 1000,
+        duration: 500,
         useNativeDriver: false,
-      }).start(() => {
-        setLives(defaultLives);
-        setLivesIcons([...Array(defaultLives).keys()].map(_icon => "heart"));
-        setShowScoreModal(false);
-
-        setCurrQIndx(0);
-        setScore(0);
-
-        setCurrAnswer(null);
-        setCorrectOption(null);
-        setAnswersDisabled(false);
-        setShowNextButton(false);
-        resolve("OK");
+      }).start(({ finished }) => {
+        resolve(finished);
       });
     });
   };
@@ -118,7 +119,7 @@ export const Quiz: React.FC<{
       <ActivityIndicator size="large" animating color={colors.accent} />
     </View>
   ) : (
-    <ScrollView style={base.containerTab}>
+    <ScrollView style={[base.containerTab]}>
       <ProgressBar {...{ progress, upper: questions.length, colors }} />
       <Question
         {...{
@@ -147,6 +148,8 @@ export const Quiz: React.FC<{
           },
         }}
       />
+      {/** Empty jsx to fill space after next button on overflow content */}
+      <View style={{ padding: 20 }} />
       <Score
         {...{
           colors,

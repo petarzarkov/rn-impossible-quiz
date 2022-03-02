@@ -37,6 +37,9 @@ const getQuestions = async (
       if (data && data.results && data.results.length) {
         return data.results.map((q: QuestionRaw) => {
           const correctAnswer = decodeHtml(q.correct_answer);
+          if (!correctAnswer) {
+            console.log("No correct answer opentdb", { q, res: data.results });
+          }
           return {
             question: decodeHtml(q.question),
             answers: [
@@ -59,6 +62,9 @@ const getQuestions = async (
     if (r.status === 200 && r?.result?.length) {
       return r.result.map((q: any) => {
         const correctAnswer = decodeHtml(q.correctAnswer);
+        if (!correctAnswer) {
+          console.log("No correct answer willfry", { q, res: r.result });
+        }
         const incorrectAnswers =
           q.incorrectAnswers?.length > 3
             ? q.incorrectAnswers.slice(0, 3)
@@ -69,6 +75,7 @@ const getQuestions = async (
             () => Math.random() - 0.5,
           ),
           category: q.category,
+          correctAnswer,
           difficulty: ["easy", "medium", "hard"][Math.floor(Math.random() * 3)],
         };
       });
@@ -83,6 +90,9 @@ const getQuestions = async (
       const data = r.result;
       return data.map((q: QuestionRaw) => {
         const correctAnswer = decodeHtml(q.correct_answer);
+        if (!correctAnswer) {
+          console.log("No correct answer bongo", { q, res: r.result });
+        }
         return {
           question: decodeHtml(q.question),
           answers: [...q.incorrect_answers.map(decodeHtml), correctAnswer].sort(

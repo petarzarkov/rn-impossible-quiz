@@ -19,7 +19,8 @@ export const PickTheme: React.FC<{
             btnStyle: [
               styles.box,
               {
-                backgroundColor: theme === l ? colors.accent : "transparent",
+                backgroundColor:
+                  theme === l ? colors.primaryLight : "transparent",
               },
             ],
             btnText: l,
@@ -48,7 +49,8 @@ export const PickLang: React.FC<{
             btnStyle: [
               styles.box,
               {
-                backgroundColor: lang === l ? colors.accent : "transparent",
+                backgroundColor:
+                  lang === l ? colors.primaryLight : "transparent",
               },
             ],
             btnText: l,
@@ -78,7 +80,7 @@ export const PickNumberQuestions: React.FC<{
               styles.box,
               {
                 backgroundColor:
-                  numberOfQ === l ? colors.accent : "transparent",
+                  numberOfQ === l ? colors.primaryLight : "transparent",
               },
             ],
             btnText: l.toString(),

@@ -11,8 +11,7 @@ export const base = StyleSheet.create({
     padding: 10,
   },
   containerTab: {
-    flex: 1,
-    paddingVertical: 15,
+    paddingVertical: 14,
     paddingHorizontal: 16,
   },
 });
