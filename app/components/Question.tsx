@@ -44,7 +44,7 @@ export const Question: React.FC<{
             alignItems: "center",
           }}
         >
-          <Text style={text.grey}>
+          <Text style={text.base}>
             {" "}
             <Text
               style={{
@@ -58,22 +58,22 @@ export const Question: React.FC<{
             </Text>{" "}
             / {questions.length}
           </Text>
-          <Text style={text.grey}>
+          <Text style={text.base}>
             {localization.score}: {score}
           </Text>
         </View>
         <View>
-          <Text style={text.grey}>
+          <Text style={text.base}>
             {localization.difficulty}: {questions[currQIndx]?.difficulty}
           </Text>
         </View>
         <View>
-          <Text style={text.grey}>
+          <Text style={text.base}>
             {localization.category}: {questions[currQIndx]?.category}
           </Text>
         </View>
         <View>
-          <Text style={text.grey}>
+          <Text style={text.base}>
             {localization.lives}:{" "}
             {livesIcons.map((lIcon, icoIndex) => (
               <MaterialCommunityIcons

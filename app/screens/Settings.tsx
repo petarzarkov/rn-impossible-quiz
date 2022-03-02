@@ -9,6 +9,7 @@ import {
 import { PickLang, PickNumberQuestions, PickTheme } from "../components";
 import { Colors } from "../contracts";
 import { base, text } from "../styles";
+import { settings } from "../config";
 
 export const Settings: React.FC<{
   colors: Colors;
@@ -30,34 +31,39 @@ export const Settings: React.FC<{
   setTheme,
   colors,
 }) => {
-  const languages = ["en", "bg"];
-  const numberOfQuestions = ["random", 20, 35, 50, 80];
   return (
     <ScrollView style={base.containerTab}>
       <View>
-        <Text style={[text.grey, settings.box]}>
+        <Text style={[text.base, settingStyle.box]}>
           {localization.themeSettings}
         </Text>
         <PickTheme {...{ theme, setTheme, colors }} />
       </View>
       <View>
-        <Text style={[text.grey, settings.box]}>
+        <Text style={[text.base, settingStyle.box]}>
           {localization.langSetting}
         </Text>
-        <PickLang {...{ lang, setLang, languages, colors }} />
+        <PickLang
+          {...{ lang, setLang, languages: settings.languages, colors }}
+        />
       </View>
       <View>
-        <Text style={[text.grey, settings.box]}>
+        <Text style={[text.base, settingStyle.box]}>
           {localization.numberOfQuestions}
         </Text>
         <PickNumberQuestions
-          {...{ numberOfQ, setNumberOfQ, numberOfQuestions, colors }}
+          {...{
+            numberOfQ,
+            setNumberOfQ,
+            numberOfQuestions: settings.numberOfQuestions,
+            colors,
+          }}
         />
       </View>
     </ScrollView>
   );
 };
 
-const settings = StyleSheet.create({
+const settingStyle = StyleSheet.create({
   box: { textAlign: "center", padding: 15 },
 });
