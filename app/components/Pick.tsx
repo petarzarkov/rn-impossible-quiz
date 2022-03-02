@@ -1,24 +1,54 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
-import { colors } from "../theme";
+import { View, StyleSheet, ColorSchemeName } from "react-native";
+import { Colors } from "../contracts";
 import { Button } from "./Button";
 
+export const PickTheme: React.FC<{
+  colors: Colors;
+  theme: ColorSchemeName;
+  setTheme: (theme: ColorSchemeName) => void;
+}> = ({ theme, setTheme, colors }) => {
+  return (
+    <View style={[styles.pickContainer]}>
+      {["dark", "light"].map((l, ind) => (
+        <Button
+          {...{
+            colors,
+            key: `${l}-${ind}`,
+            disabled: theme === l,
+            btnStyle: [
+              styles.box,
+              {
+                backgroundColor: theme === l ? colors.accent : "transparent",
+              },
+            ],
+            btnText: l,
+            handlePress: () => setTheme(l as "dark" | "light"),
+          }}
+        />
+      ))}
+    </View>
+  );
+};
+
 export const PickLang: React.FC<{
+  colors: Colors;
   lang: "en" | "bg";
   setLang: (lang: "en" | "bg") => void;
   languages: string[];
-}> = ({ lang, setLang, languages }) => {
+}> = ({ lang, setLang, languages, colors }) => {
   return (
     <View style={[styles.pickContainer]}>
       {languages.map((l, ind) => (
         <Button
           {...{
+            colors,
             key: `${l}-${ind}`,
             disabled: lang === l,
             btnStyle: [
               styles.box,
               {
-                backgroundColor: lang === l ? colors.lightBlue : "transparent",
+                backgroundColor: lang === l ? colors.accent : "transparent",
               },
             ],
             btnText: l,
@@ -31,29 +61,29 @@ export const PickLang: React.FC<{
 };
 
 export const PickNumberQuestions: React.FC<{
+  colors: Colors;
   setNumberOfQ: (n: "random" | number) => void;
   numberOfQ: "random" | number;
   numberOfQuestions: (string | number)[];
-  refreshQuestions: () => void;
-}> = ({ numberOfQuestions, numberOfQ, setNumberOfQ, refreshQuestions }) => {
+}> = ({ numberOfQuestions, numberOfQ, setNumberOfQ, colors }) => {
   return (
     <View style={[styles.pickContainer]}>
       {numberOfQuestions.map((l, ind) => (
         <Button
           {...{
+            colors,
             key: `${l}-${ind}`,
             disabled: numberOfQ === l,
             btnStyle: [
               styles.box,
               {
                 backgroundColor:
-                  numberOfQ === l ? colors.lightBlue : "transparent",
+                  numberOfQ === l ? colors.accent : "transparent",
               },
             ],
             btnText: l.toString(),
             handlePress: () => {
               setNumberOfQ(l as "random" | number);
-              refreshQuestions();
             },
           }}
         />
@@ -69,8 +99,6 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 4,
     borderWidth: 1,
-    borderColor: colors.lightBlue,
-    backgroundColor: "oldlace",
     alignSelf: "flex-start",
     marginHorizontal: "1%",
     marginBottom: 6,

@@ -1,4 +1,8 @@
 export const decodeHtml = (text: string) => {
+  if (!text) {
+    return;
+  }
+  text = text.trim();
   text = text.replace(/%/g, "");
   // eslint-disable-next-line prettier/prettier
   text = text.replace(/&quot;/g, "\"");
@@ -8,5 +12,9 @@ export const decodeHtml = (text: string) => {
   text = text.replace(/&pi;/gi, "π");
   text = text.replace(/&ldquo;/gi, "“");
   text = text.replace(/&rdquo;/gi, "”");
+  text = text.replace(/&uacute;/gi, "ú");
+  text = text.replace(/&atilde;/gi, "ã");
+  text = text.replace(/&oacute;/gi, "ó");
+  text = text.replace(/&uuml/gi, "ü");
   return text;
 };

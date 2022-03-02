@@ -1,14 +1,32 @@
-export const colors = {
+import { DefaultTheme } from "@react-navigation/native";
+import { Colors } from "../contracts";
+
+const Base = {
   primary: "#252c4a",
+  primaryLight: "#9cbff7",
   secondary: "#1E90FF",
   accent: "#3498db",
 
   success: "#00C851",
   error: "#ff4444",
+};
 
-  black: "#171717",
-  white: "#FFFFFF",
-  background: "#87503b",
+export const Dark: Colors = {
+  ...DefaultTheme.colors,
+  ...Base,
+  primary: "#424242",
+  accent: "#1b1b1b",
+  primaryLight: "#6d6d6d",
+  text: "#eeeeee",
+  background: "#bdbdbd",
+};
 
-  lightBlue: "#9cbff7",
+export const Light: Colors = {
+  ...DefaultTheme.colors,
+  ...Base,
+  primary: "#eeeeee",
+  accent: "#bcbcbc",
+  primaryLight: "#ffffff",
+  text: "#f5f5f5",
+  background: "#616161",
 };

@@ -59,9 +59,13 @@ const getQuestions = async (
     if (r.status === 200 && r?.result?.length) {
       return r.result.map((q: any) => {
         const correctAnswer = decodeHtml(q.correctAnswer);
+        const incorrectAnswers =
+          q.incorrectAnswers?.length > 3
+            ? q.incorrectAnswers.slice(0, 3)
+            : q.incorrectAnswers;
         return {
           question: q.question,
-          answers: [...q.incorrectAnswers.map(decodeHtml), correctAnswer].sort(
+          answers: [...incorrectAnswers.map(decodeHtml), correctAnswer].sort(
             () => Math.random() - 0.5,
           ),
           category: q.category,
@@ -86,7 +90,7 @@ const getQuestions = async (
           ),
           correctAnswer,
           category: q.category || "Unknown",
-          difficulty: q.difficulty,
+          difficulty: q.difficulty || "easy",
         };
       });
     }

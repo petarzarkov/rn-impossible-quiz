@@ -1,8 +1,9 @@
 import React from "react";
 import { Text, TextStyle, TouchableOpacity, ViewStyle } from "react-native";
-import { colors } from "../theme";
+import { Colors } from "../contracts";
 
 export const Button: React.FC<{
+  colors: Colors;
   show?: boolean;
   handlePress: () => void;
   btnText: string;
@@ -17,6 +18,7 @@ export const Button: React.FC<{
     btnStyle,
     btnTextStyle,
     disabled = false,
+    colors,
   } = {} as any,
 ) => {
   if (show) {
@@ -29,6 +31,7 @@ export const Button: React.FC<{
           {
             width: "100%",
             backgroundColor: colors.accent,
+            borderColor: colors.primaryLight,
             padding: 20,
             borderRadius: 5,
           },
@@ -38,7 +41,7 @@ export const Button: React.FC<{
         <Text
           style={[
             // eslint-disable-next-line react-native/no-inline-styles
-            { fontSize: 20, color: colors.white, textAlign: "center" },
+            { fontSize: 20, color: colors.text, textAlign: "center" },
             btnTextStyle && btnTextStyle,
           ]}
         >

@@ -1,11 +1,11 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from "react";
 import { View, Text, Modal } from "react-native";
-import { QuestionParsed } from "../contracts";
-import { colors } from "../theme";
+import { Colors, QuestionParsed } from "../contracts";
 import { Button } from "./Button";
 
 export const Score: React.FC<{
+  colors: Colors;
   lives: number;
   score: number;
   showScoreModal: boolean;
@@ -25,6 +25,7 @@ export const Score: React.FC<{
   newGameText,
   newGameHandle,
   localization,
+  colors,
 }) => {
   return (
     <Modal animationType="slide" transparent={true} visible={showScoreModal}>
@@ -37,7 +38,7 @@ export const Score: React.FC<{
       >
         <View
           style={{
-            backgroundColor: colors.lightBlue,
+            backgroundColor: colors.background,
             width: "90%",
             borderRadius: 20,
             padding: 20,
@@ -72,7 +73,7 @@ export const Score: React.FC<{
             <Text
               style={{
                 fontSize: 20,
-                color: colors.black,
+                color: colors.text,
               }}
             >
               / {questions.length}
@@ -80,6 +81,7 @@ export const Score: React.FC<{
           </View>
           <Button
             {...{
+              colors,
               handlePress: restartHandle,
               btnText: restartText,
               btnStyle: {
@@ -89,6 +91,7 @@ export const Score: React.FC<{
           />
           <Button
             {...{
+              colors,
               handlePress: newGameHandle,
               btnText: newGameText,
               btnStyle: {

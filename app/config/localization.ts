@@ -11,6 +11,7 @@ export const localization = {
     dead: "Умре :/",
     score: "Резултат",
     langSetting: "Избери език",
+    themeSettings: "Тема",
     numberOfQuestions: "Брой въпроси",
   },
   en: {
@@ -25,6 +26,7 @@ export const localization = {
     dead: "You died :/",
     score: "Score",
     langSetting: "Choose language",
+    themeSettings: "Theme",
     numberOfQuestions: "Number of questions",
   },
 };

@@ -1,14 +1,13 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   SafeAreaView,
   StatusBar,
   ImageBackground,
   useColorScheme,
 } from "react-native";
-import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { colors } from "./theme";
 import { requests } from "./services";
 import { localization } from "./config";
 import { base } from "./styles";
@@ -16,11 +15,16 @@ import { QuestionParsed } from "./contracts";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { Quiz, Settings } from "./screens";
+import { getTheme } from "./utils";
 
 const Tab = createBottomTabNavigator();
 
 const App = () => {
-  const isDarkMode = useColorScheme() === "dark";
+  const isInitialMount = useRef(true);
+  const [theme, setTheme] = useState(useColorScheme());
+  const [themeColors, setColors] = useState(getTheme(theme));
+  const isDarkMode = themeColors.isDarkMode;
+  const colors = themeColors.colors;
   const [lang, setLang] = useState<keyof typeof localization>("en");
   const [isLoading, setLoading] = useState(true);
   const [questions, setQuestions] = useState<QuestionParsed[] | null>(null);
@@ -32,13 +36,22 @@ const App = () => {
     if (newQuestions) {
       setQuestions(newQuestions);
     }
+
     setLoading(false);
   };
 
   useEffect(() => {
-    refreshQuestions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [numberOfQ]);
+    // Did mount
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      refreshQuestions();
+      return;
+    }
+  });
+
+  useEffect(() => {
+    setColors(getTheme(theme));
+  }, [theme]);
 
   return (
     <SafeAreaView
@@ -47,26 +60,35 @@ const App = () => {
       }}
     >
       <ImageBackground
-        source={require("./assets/images/stars.png")}
+        source={
+          isDarkMode
+            ? require("./assets/images/stars-dark.png")
+            : require("./assets/images/stars-light.png")
+        }
         resizeMode="cover"
-        style={base.container}
+        style={[base.container]}
       >
-        <StatusBar barStyle="light-content" backgroundColor={colors.primary} />
+        <StatusBar
+          barStyle={isDarkMode ? "light-content" : "dark-content"}
+          backgroundColor={colors.primary}
+        />
         <NavigationContainer
           theme={{
             dark: isDarkMode,
             colors: {
-              ...DefaultTheme.colors,
+              ...colors,
               background: "transparent",
-              primary: colors.primary,
             },
           }}
         >
           <Tab.Navigator
             screenOptions={{
+              tabBarStyle: { borderTopWidth: 0 },
+              tabBarActiveBackgroundColor: colors.primaryLight,
+              tabBarInactiveBackgroundColor: colors.primary,
               headerShown: false,
               tabBarActiveTintColor: colors.accent,
-              tabBarInactiveTintColor: colors.lightBlue,
+              tabBarInactiveTintColor: colors.primaryLight,
             }}
           >
             <Tab.Screen
@@ -86,6 +108,7 @@ const App = () => {
                 <Quiz
                   {...props}
                   {...{
+                    colors,
                     isLoading,
                     lang,
                     setLang,
@@ -109,12 +132,15 @@ const App = () => {
                 <Settings
                   {...props}
                   {...{
+                    colors,
                     localization: localization[lang],
                     lang,
                     setLang,
                     numberOfQ,
                     setNumberOfQ,
                     refreshQuestions,
+                    theme,
+                    setTheme,
                   }}
                 />
               )}

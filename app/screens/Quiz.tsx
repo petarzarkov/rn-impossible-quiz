@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Animated, ScrollView, View, ActivityIndicator } from "react-native";
 import { Button, ProgressBar, Question, Score } from "../components";
-import { QuestionParsed } from "../contracts";
+import { Colors, QuestionParsed } from "../contracts";
 import { base } from "../styles";
-import { colors } from "../theme";
 
 export const Quiz: React.FC<{
   questions: QuestionParsed[];
   isLoading: boolean;
   refreshQuestions: () => void;
   localization: Record<string, string>;
-}> = ({ questions, refreshQuestions, localization, isLoading }) => {
-  const defaultLives = Math.round((questions?.length || 3) / 3) || 1;
+  colors: Colors;
+}> = ({ questions, refreshQuestions, localization, isLoading, colors }) => {
+  const [defaultLives, setDefaultLives] = useState(
+    Math.round((questions?.length || 3) / 3) || 1,
+  );
   const [currQIndx, setCurrQIndx] = useState(0);
   const [currAnswer, setCurrAnswer] = useState<string | null>(null);
   const [correctAnswer, setCorrectOption] = useState<string | null>(null);
@@ -23,7 +25,7 @@ export const Quiz: React.FC<{
   const [livesIcons, setLivesIcons] = useState(
     [...Array(lives).keys()].map(_icon => "heart"),
   );
-  const [progress] = useState(new Animated.Value(0));
+  const progress = useRef(new Animated.Value(0)).current;
 
   const showScoreDead = (timeout = 800) => {
     return new Promise(resolve =>
@@ -39,6 +41,15 @@ export const Quiz: React.FC<{
       showScoreDead();
     }
   }, [lives]);
+
+  useEffect(() => {
+    if (questions?.length) {
+      const defLives = Math.round((questions?.length || 3) / 3) || 1;
+      setLives(defLives);
+      setDefaultLives(defLives);
+      setLivesIcons([...Array(defLives).keys()].map(_icon => "heart"));
+    }
+  }, [questions?.length]);
 
   const validateAnswer = (selectedOption: string) => {
     const nextCorrectAnswer = questions[currQIndx].correctAnswer;
@@ -67,7 +78,8 @@ export const Quiz: React.FC<{
       useNativeDriver: false,
     }).start();
     if (currQIndx === questions.length - 1) {
-      return setShowScoreModal(true);
+      setShowScoreModal(true);
+      return;
     }
 
     setCurrQIndx(currQIndx + 1);
@@ -79,22 +91,26 @@ export const Quiz: React.FC<{
   };
 
   const restartQuiz = () => {
-    setLives(defaultLives);
-    setLivesIcons([...Array(defaultLives).keys()].map(_icon => "heart"));
-    setShowScoreModal(false);
+    return new Promise(resolve => {
+      Animated.timing(progress, {
+        toValue: 0,
+        duration: 1000,
+        useNativeDriver: false,
+      }).start(() => {
+        setLives(defaultLives);
+        setLivesIcons([...Array(defaultLives).keys()].map(_icon => "heart"));
+        setShowScoreModal(false);
 
-    setCurrQIndx(0);
-    setScore(0);
+        setCurrQIndx(0);
+        setScore(0);
 
-    setCurrAnswer(null);
-    setCorrectOption(null);
-    setAnswersDisabled(false);
-    setShowNextButton(false);
-    Animated.timing(progress, {
-      toValue: 0,
-      duration: 1000,
-      useNativeDriver: false,
-    }).start();
+        setCurrAnswer(null);
+        setCorrectOption(null);
+        setAnswersDisabled(false);
+        setShowNextButton(false);
+        resolve("OK");
+      });
+    });
   };
 
   return isLoading ? (
@@ -103,9 +119,10 @@ export const Quiz: React.FC<{
     </View>
   ) : (
     <ScrollView style={base.containerTab}>
-      <ProgressBar {...{ progress, upper: questions.length }} />
+      <ProgressBar {...{ progress, upper: questions.length, colors }} />
       <Question
         {...{
+          colors,
           livesIcons,
           show: !showScoreModal,
           score,
@@ -120,6 +137,7 @@ export const Quiz: React.FC<{
       />
       <Button
         {...{
+          colors,
           btnText: localization.nextBtn,
           show: showNextButton && !showScoreModal && lives !== 0,
           handlePress: handleNext,
@@ -131,13 +149,13 @@ export const Quiz: React.FC<{
       />
       <Score
         {...{
+          colors,
           lives,
           restartHandle: restartQuiz,
           restartText: localization.retryBtn,
           newGameText: localization.newGameText,
           newGameHandle: () => {
-            restartQuiz();
-            refreshQuestions();
+            restartQuiz().then(() => refreshQuestions());
           },
           score,
           showScoreModal,

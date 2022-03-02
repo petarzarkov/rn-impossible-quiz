@@ -2,11 +2,11 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { colors } from "../theme";
 import { text } from "../styles";
-import { QuestionParsed } from "../contracts";
+import { Colors, QuestionParsed } from "../contracts";
 
 export const Question: React.FC<{
+  colors: Colors;
   livesIcons: string[];
   show?: boolean;
   score: number;
@@ -28,6 +28,7 @@ export const Question: React.FC<{
   currAnswer,
   validateAnswer,
   localization,
+  colors,
 }) => {
   if (show) {
     return (
@@ -47,7 +48,7 @@ export const Question: React.FC<{
             {" "}
             <Text
               style={{
-                color: colors.white,
+                color: colors.text,
                 fontSize: 20,
                 opacity: 0.6,
                 marginRight: 2,
@@ -88,7 +89,7 @@ export const Question: React.FC<{
         </View>
         <Text
           style={{
-            color: colors.white,
+            color: colors.text,
             fontSize: 20,
           }}
         >
@@ -107,14 +108,15 @@ export const Question: React.FC<{
                     ? colors.success
                     : answer === currAnswer
                     ? colors.error
-                    : colors.secondary + "40",
+                    : colors.background + "40",
                 backgroundColor:
                   answer === correctAnswer
                     ? colors.success + "20"
                     : answer === currAnswer
                     ? colors.error + "20"
-                    : colors.secondary + "20",
-                height: 60,
+                    : colors.background + "20",
+                minHeight: 60,
+                maxHeight: 120,
                 borderRadius: 20,
                 flexDirection: "row",
                 alignItems: "center",
@@ -123,9 +125,7 @@ export const Question: React.FC<{
                 marginVertical: 5,
               }}
             >
-              <Text style={{ fontSize: 20, color: colors.white }}>
-                {answer}
-              </Text>
+              <Text style={{ fontSize: 20, color: colors.text }}>{answer}</Text>
               {answer === correctAnswer ? (
                 <View
                   style={{
@@ -140,7 +140,7 @@ export const Question: React.FC<{
                   <MaterialCommunityIcons
                     name="check"
                     style={{
-                      color: colors.white,
+                      color: colors.text,
                       fontSize: 20,
                     }}
                   />
@@ -159,7 +159,7 @@ export const Question: React.FC<{
                   <MaterialCommunityIcons
                     name="close"
                     style={{
-                      color: colors.white,
+                      color: colors.text,
                       fontSize: 20,
                     }}
                   />
