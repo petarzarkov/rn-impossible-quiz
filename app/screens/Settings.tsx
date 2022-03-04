@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  ColorSchemeName,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { PickBase } from "../components";
 import { Colors } from "../contracts";
 import { base, text } from "../styles";
@@ -18,8 +12,8 @@ export const Settings: React.FC<{
   localization: Record<string, string>;
   setNumberOfQ: (n: "random" | number) => void;
   numberOfQ: "random" | number;
-  theme: ColorSchemeName;
-  setTheme: (theme: ColorSchemeName) => void;
+  theme: "light" | "dark";
+  setTheme: (theme: "light" | "dark") => void;
 }> = ({
   lang,
   setLang,
@@ -38,7 +32,7 @@ export const Settings: React.FC<{
         >
           {localization.themeSettings}
         </Text>
-        <PickBase<ColorSchemeName>
+        <PickBase<"light" | "dark">
           {...{
             colors,
             option: theme,

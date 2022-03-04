@@ -1,9 +1,9 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import { Colors } from "../contracts";
-import { Button } from "./Button";
+import { Colors } from "../../contracts";
+import { ButtonBase } from "./ButtonBase";
 
-export function PickBase<Option>({
+export function PickBase<Option extends string | number>({
   colors,
   pickOptions,
   option,
@@ -18,7 +18,7 @@ export function PickBase<Option>({
   return (
     <View style={[styles.pickContainer]}>
       {pickOptions.map((l, ind) => (
-        <Button
+        <ButtonBase
           {...{
             colors,
             key: `${l}-${ind}`,
@@ -30,7 +30,7 @@ export function PickBase<Option>({
                   option === l ? colors.primaryLight : "transparent",
               },
             ],
-            btnText: l as unknown as string,
+            btnText: l,
             handlePress: () => setOption(l),
           }}
         />

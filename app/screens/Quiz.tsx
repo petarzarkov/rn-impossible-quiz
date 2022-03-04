@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useReducer } from "react";
 import {
   Animated,
   ScrollView,
@@ -7,129 +7,219 @@ import {
   ActivityIndicator,
   Text,
 } from "react-native";
-import { Button, Lifeline, ProgressBar, Question, Score } from "../components";
+import {
+  ButtonBase,
+  Lifeline,
+  ProgressBar,
+  Question,
+  Score,
+} from "../components";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { Colors, QuestionParsed } from "../contracts";
+import { Colors, QuestionParsed, QuizState } from "../contracts";
 import { base } from "../styles";
+import { getData, storeData } from "../store";
+import { HotObj } from "../utils";
+import { useInterval } from "../hooks";
 
 export const Quiz: React.FC<{
   questions: QuestionParsed[];
   isLoading: boolean;
   refreshQuestions: () => void;
+  storeQuestionsInPlace: (questions: string) => void;
   localization: Record<string, string>;
   colors: Colors;
-}> = ({ questions, refreshQuestions, localization, isLoading, colors }) => {
+}> = ({
+  questions,
+  refreshQuestions,
+  storeQuestionsInPlace,
+  localization,
+  isLoading,
+  colors,
+}) => {
+  const isInitialMount = useRef(true);
   const [defaultLives, setDefaultLives] = useState(
     Math.round((questions?.length || 3) / 3) || 1,
   );
-  const [currQIndx, setCurrQIndx] = useState(0);
-  const [currAnswer, setCurrAnswer] = useState<string | null>(null);
-  const [correctAnswer, setCorrectOption] = useState<string | null>(null);
-  const [answersDisabled, setAnswersDisabled] = useState(false);
-  const [score, setScore] = useState(0);
-  const [showNextButton, setShowNextButton] = useState(false);
-  const [showScoreModal, setShowScoreModal] = useState(false);
-  const [lives, setLives] = useState(defaultLives);
-  const [livesIcons, setLivesIcons] = useState(
-    [...Array(lives).keys()].map(_icon => "heart"),
-  );
-  const [showLifeline, setShowLifeline] = useState(false);
-  const [lifeline, setLifeline] = useState({ hasFiddy: true });
   const progress = useRef(new Animated.Value(0)).current;
+  const [prevState, updatePrevState] = useState<QuizState | null>(null);
+  // eslint-disable-next-line no-spaced-func
+  const [currState, updateState] = useReducer<
+    (state: QuizState, updates: Partial<QuizState>) => QuizState
+  >(
+    (state, updates) => {
+      updatePrevState(state);
+      return {
+        ...state,
+        ...updates,
+      };
+    },
+    {
+      questionIndx: 0,
+      answer: null,
+      correctAnswer: null,
+      answersDisabled: false,
+      score: 0,
+      showNextButton: false,
+      showScoreModal: false,
+      showLifeline: false,
+      lives: defaultLives,
+      livesIcons: [...Array(defaultLives).keys()].map(_icon => "heart"),
+      lifeline: { hasFiddy: true },
+      progress: useRef(new Animated.Value(0)).current,
+    },
+  );
+
+  const preserveQuizState = () => {
+    if (
+      !prevState ||
+      !HotObj.shallowEquals(prevState, currState) ||
+      !HotObj.shallowEquals(prevState.lifeline, currState.lifeline)
+    ) {
+      updatePrevState(currState);
+      storeData("latest_quiz", currState);
+    }
+  };
+
+  useInterval(preserveQuizState, 2000);
 
   const showScoreDead = (timeout = 800) => {
     return new Promise(resolve =>
       setTimeout(() => {
-        setShowScoreModal(true);
+        updateState({
+          showScoreModal: true,
+          showLifeline: false,
+        });
         resolve("OK");
       }, timeout),
     );
   };
 
   const fiddyFiddy = () => {
-    const currentIncorrectAnswers = questions[currQIndx]?.answers?.filter(
-      a => a !== questions[currQIndx].correctAnswer,
+    const currentIncorrectAnswers = questions[
+      currState.questionIndx
+    ]?.answers?.filter(
+      a => a !== questions[currState.questionIndx].correctAnswer,
     );
 
     if (currentIncorrectAnswers.length) {
-      questions[currQIndx].answers = [
+      questions[currState.questionIndx].answers = [
         currentIncorrectAnswers[
           Math.floor(Math.random() * currentIncorrectAnswers.length)
         ],
-        questions[currQIndx].correctAnswer,
+        questions[currState.questionIndx].correctAnswer,
       ].sort(() => Math.random() - 0.5);
+
+      updateState({
+        lifeline: { ...currState.lifeline, hasFiddy: false },
+      });
+      storeQuestionsInPlace(JSON.stringify(questions));
+    }
+  };
+
+  const initFromStorage = async () => {
+    const prevData = await getData<QuizState>("latest_quiz");
+
+    if (prevData) {
+      updateState(prevData);
     }
 
-    setLifeline({ ...lifeline, hasFiddy: false });
+    return prevData || currState;
   };
 
   useEffect(() => {
-    if (lives === 0) {
+    // Did mount
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      initFromStorage();
+    }
+  });
+
+  useEffect(() => {
+    if (currState.lives === 0) {
       showScoreDead();
     }
-  }, [lives]);
+  }, [currState.lives]);
 
   useEffect(() => {
     if (questions?.length) {
       const defLives = Math.round((questions?.length || 3) / 3) || 1;
-      setLives(defLives);
       setDefaultLives(defLives);
-      setLivesIcons([...Array(defLives).keys()].map(_icon => "heart"));
+      updateState({
+        lives: defLives,
+        livesIcons: [...Array(defLives).keys()].map(_icon => "heart"),
+      });
     }
   }, [questions?.length]);
 
   const validateAnswer = (selectedOption: string) => {
-    const nextCorrectAnswer = questions[currQIndx].correctAnswer;
-    setCurrAnswer(selectedOption);
-    setCorrectOption(nextCorrectAnswer);
-    setAnswersDisabled(true);
+    const nextCorrectAnswer = questions[currState.questionIndx].correctAnswer;
+    updateState({
+      answer: selectedOption,
+      correctAnswer: nextCorrectAnswer,
+      answersDisabled: true,
+    });
+
     if (selectedOption === nextCorrectAnswer) {
-      setScore(score + 1);
-      return setShowNextButton(true);
-    }
-
-    setLives(lives - 1);
-    const latestLiveIcon = livesIcons.lastIndexOf("heart");
-    if (latestLiveIcon !== -1) {
-      livesIcons[latestLiveIcon] = "heart-broken";
-      setLivesIcons(livesIcons);
-    }
-
-    return setShowNextButton(true);
-  };
-
-  const handleNext = () => {
-    Animated.timing(progress, {
-      toValue: currQIndx + 1,
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
-    if (currQIndx === questions.length - 1) {
-      setShowScoreModal(true);
+      updateState({
+        score: currState.score + 1,
+        showNextButton: true,
+      });
       return;
     }
 
-    setCurrQIndx(currQIndx + 1);
-    setCurrAnswer(null);
-    setCorrectOption(null);
-    setAnswersDisabled(false);
-    setShowNextButton(false);
+    const latestLiveIcon = currState.livesIcons.lastIndexOf("heart");
+    if (latestLiveIcon !== -1) {
+      currState.livesIcons[latestLiveIcon] = "heart-broken";
+    }
+
+    updateState({
+      lives: currState.lives - 1,
+      livesIcons: currState.livesIcons,
+      showNextButton: true,
+    });
+
+    return;
+  };
+
+  const handleNext = () => {
+    const currIndex = currState.questionIndx;
+    Animated.timing(progress, {
+      toValue: currIndex + 1,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+    if (currState.questionIndx === questions.length - 1) {
+      updateState({
+        showScoreModal: true,
+        showLifeline: false,
+      });
+      return;
+    }
+
+    updateState({
+      questionIndx: currIndex + 1,
+      answer: null,
+      correctAnswer: null,
+      answersDisabled: false,
+      showNextButton: false,
+    });
     return;
   };
 
   const restartQuiz = () => {
-    setLives(defaultLives);
-    setLivesIcons([...Array(defaultLives).keys()].map(_icon => "heart"));
+    updateState({
+      answer: null,
+      correctAnswer: null,
+      questionIndx: 0,
+      score: 0,
+      lives: defaultLives,
+      livesIcons: [...Array(defaultLives).keys()].map(_icon => "heart"),
+      answersDisabled: false,
+      showNextButton: false,
+      showScoreModal: false,
+      lifeline: { ...currState.lifeline, hasFiddy: true },
+    });
 
-    setCurrQIndx(0);
-    setScore(0);
-
-    setCurrAnswer(null);
-    setCorrectOption(null);
-    setAnswersDisabled(false);
-    setShowNextButton(false);
-    setLifeline({ ...lifeline, hasFiddy: true });
-    setShowScoreModal(false);
     return new Promise(resolve => {
       Animated.timing(progress, {
         toValue: 0,
@@ -141,6 +231,23 @@ export const Quiz: React.FC<{
     });
   };
 
+  const setShowLifeline = (showLifeline: boolean) => {
+    updateState({ showLifeline });
+  };
+
+  const {
+    lives,
+    livesIcons,
+    showScoreModal,
+    showNextButton,
+    showLifeline,
+    score,
+    questionIndx,
+    answersDisabled,
+    correctAnswer,
+    lifeline,
+    answer,
+  } = currState;
   return isLoading ? (
     <View style={[base.container, base.horizontal]}>
       <ActivityIndicator size="large" animating color={colors.accent} />
@@ -154,11 +261,11 @@ export const Quiz: React.FC<{
           livesIcons,
           show: !showScoreModal,
           score,
-          currQIndx,
+          currQIndx: questionIndx,
           questions,
           answersDisabled,
           correctAnswer,
-          currAnswer,
+          currAnswer: answer,
           validateAnswer,
           localization,
         }}
@@ -169,7 +276,7 @@ export const Quiz: React.FC<{
             name={"pulse"}
             backgroundColor={colors.accent}
             size={15}
-            key={`${questions[currQIndx]?.question}-pulse`}
+            key={`${questions[questionIndx]?.question}-pulse`}
             onPress={() => {
               setShowLifeline(true);
             }}
@@ -180,7 +287,7 @@ export const Quiz: React.FC<{
           </MaterialCommunityIcons.Button>
         </View>
       ) : null}
-      <Button
+      <ButtonBase
         {...{
           colors,
           btnText: localization.nextBtn,
@@ -220,7 +327,7 @@ export const Quiz: React.FC<{
           },
           fiddyFiddy,
           showFiddy:
-            lifeline.hasFiddy && questions[currQIndx]?.answers?.length > 2,
+            lifeline.hasFiddy && questions[questionIndx]?.answers?.length > 2,
           showLifelineModal: showLifeline,
           setShow: setShowLifeline,
           questions,

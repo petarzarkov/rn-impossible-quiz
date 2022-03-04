@@ -1,12 +1,12 @@
 import React from "react";
 import { Text, TextStyle, TouchableOpacity, ViewStyle } from "react-native";
-import { Colors } from "../contracts";
+import { Colors } from "../../contracts";
 
-export const Button: React.FC<{
+export const ButtonBase: React.FC<{
   colors: Colors;
   show?: boolean;
   handlePress: () => void;
-  btnText: string;
+  btnText: string | number;
   btnStyle?: ViewStyle;
   btnTextStyle?: TextStyle;
   disabled?: boolean;

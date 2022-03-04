@@ -3,7 +3,7 @@ import React from "react";
 import { View, Text } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Colors, QuestionParsed } from "../contracts";
-import { ModalBase } from "./ModalBase";
+import { ModalBase } from "./base";
 
 export const Lifeline: React.FC<{
   colors: Colors;

@@ -8,7 +8,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { Colors } from "../contracts";
+import { Colors } from "../../contracts";
 
 export const ModalBase: React.FC<{
   colors: Colors;

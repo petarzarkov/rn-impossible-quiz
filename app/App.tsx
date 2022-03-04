@@ -5,7 +5,6 @@ import {
   StatusBar,
   ImageBackground,
   useColorScheme,
-  ColorSchemeName,
 } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -25,7 +24,7 @@ const Tab = createBottomTabNavigator();
 const App = () => {
   const isInitialMount = useRef(true);
   const { getItem: getSettings } = useAsyncStorage("@storage_latest_settings");
-  const [theme, setThemeLocal] = useState(useColorScheme());
+  const [theme, setThemeLocal] = useState(useColorScheme() || "dark");
 
   const [themeColors, setColors] = useState(getTheme(theme));
   const isDarkMode = themeColors.isDarkMode;
@@ -38,7 +37,7 @@ const App = () => {
     "@storage_latest_questions",
   );
 
-  const setTheme = (t: ColorSchemeName) => {
+  const setTheme = (t: "light" | "dark") => {
     setThemeLocal(t);
     storeData("latest_settings", { theme: t, numberOfQ, lang });
   };
@@ -173,6 +172,7 @@ const App = () => {
                     lang,
                     setLang,
                     questions: questions as unknown as QuestionParsed[],
+                    storeQuestionsInPlace: storeQuestions,
                     refreshQuestions,
                     localization: localization[lang],
                   }}

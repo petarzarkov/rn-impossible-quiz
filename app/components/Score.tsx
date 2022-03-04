@@ -2,7 +2,7 @@
 import React from "react";
 import { View, Text, Modal } from "react-native";
 import { Colors, QuestionParsed } from "../contracts";
-import { Button } from "./Button";
+import { ButtonBase } from "./base";
 import ConfettiCannon from "react-native-confetti-cannon";
 
 export const Score: React.FC<{
@@ -79,7 +79,7 @@ export const Score: React.FC<{
               / {questions.length}
             </Text>
           </View>
-          <Button
+          <ButtonBase
             {...{
               colors,
               handlePress: restartHandle,
@@ -89,7 +89,7 @@ export const Score: React.FC<{
               },
             }}
           />
-          <Button
+          <ButtonBase
             {...{
               colors,
               handlePress: newGameHandle,
