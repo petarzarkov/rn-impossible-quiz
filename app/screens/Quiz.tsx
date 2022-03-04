@@ -34,6 +34,7 @@ export const Quiz: React.FC<{
     [...Array(lives).keys()].map(_icon => "heart"),
   );
   const [showLifeline, setShowLifeline] = useState(false);
+  const [lifeline, setLifeline] = useState({ hasFiddy: true });
   const progress = useRef(new Animated.Value(0)).current;
 
   const showScoreDead = (timeout = 800) => {
@@ -43,6 +44,23 @@ export const Quiz: React.FC<{
         resolve("OK");
       }, timeout),
     );
+  };
+
+  const fiddyFiddy = () => {
+    const currentIncorrectAnswers = questions[currQIndx]?.answers?.filter(
+      a => a !== questions[currQIndx].correctAnswer,
+    );
+
+    if (currentIncorrectAnswers.length) {
+      questions[currQIndx].answers = [
+        currentIncorrectAnswers[
+          Math.floor(Math.random() * currentIncorrectAnswers.length)
+        ],
+        questions[currQIndx].correctAnswer,
+      ].sort(() => Math.random() - 0.5);
+    }
+
+    setLifeline({ ...lifeline, hasFiddy: false });
   };
 
   useEffect(() => {
@@ -110,6 +128,7 @@ export const Quiz: React.FC<{
     setCorrectOption(null);
     setAnswersDisabled(false);
     setShowNextButton(false);
+    setLifeline({ ...lifeline, hasFiddy: true });
     setShowScoreModal(false);
     return new Promise(resolve => {
       Animated.timing(progress, {
@@ -144,21 +163,23 @@ export const Quiz: React.FC<{
           localization,
         }}
       />
-      <View style={{ padding: 5, maxWidth: "50%" }}>
-        <MaterialCommunityIcons.Button
-          name={"pulse"}
-          backgroundColor={colors.accent}
-          size={15}
-          key={`${questions[currQIndx]?.question}-pulse`}
-          onPress={() => {
-            setShowLifeline(true);
-          }}
-        >
-          <Text style={{ fontFamily: "Arial", fontSize: 15 }}>
-            {localization.lifeline}
-          </Text>
-        </MaterialCommunityIcons.Button>
-      </View>
+      {!answersDisabled ? (
+        <View style={{ padding: 5, maxWidth: "50%" }}>
+          <MaterialCommunityIcons.Button
+            name={"pulse"}
+            backgroundColor={colors.accent}
+            size={15}
+            key={`${questions[currQIndx]?.question}-pulse`}
+            onPress={() => {
+              setShowLifeline(true);
+            }}
+          >
+            <Text style={{ fontFamily: "Arial", fontSize: 15 }}>
+              {localization.lifeline}
+            </Text>
+          </MaterialCommunityIcons.Button>
+        </View>
+      ) : null}
       <Button
         {...{
           colors,
@@ -197,6 +218,9 @@ export const Quiz: React.FC<{
             setShowLifeline(false);
             restartQuiz().then(() => refreshQuestions());
           },
+          fiddyFiddy,
+          showFiddy:
+            lifeline.hasFiddy && questions[currQIndx]?.answers?.length > 2,
           showLifelineModal: showLifeline,
           setShow: setShowLifeline,
           questions,

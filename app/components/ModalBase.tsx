@@ -8,42 +8,28 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { Colors, QuestionParsed } from "../contracts";
+import { Colors } from "../contracts";
 
-export const Lifeline: React.FC<{
+export const ModalBase: React.FC<{
   colors: Colors;
-  showLifelineModal: boolean;
-  questions: QuestionParsed[];
-  restartQuiz: () => void;
-  restartText: string;
-  localization: Record<string, string>;
-  setShow: (show: boolean) => void;
-  fiddyFiddy: () => void;
-  showFiddy: boolean;
-}> = ({
-  showLifelineModal,
-  restartQuiz,
-  restartText,
-  colors,
-  setShow,
-  fiddyFiddy,
-  showFiddy,
-  localization,
-}) => {
+  visible: boolean;
+  onDismiss: () => void;
+  title: string;
+}> = ({ colors, visible, onDismiss, title, children }) => {
   return (
     <View style={[styles.centeredView]}>
       <Modal
         animationType="slide"
         transparent={true}
-        visible={showLifelineModal}
+        visible={visible}
         collapsable
         onRequestClose={() => {
-          setShow(false);
+          onDismiss();
         }}
       >
         <TouchableWithoutFeedback
           onPress={() => {
-            setShow(false);
+            onDismiss();
           }}
         >
           <View style={styles.modalOverlay} />
@@ -60,48 +46,18 @@ export const Lifeline: React.FC<{
               padding: 5,
             }}
           >
-            <Text style={{ flex: 1 }}>{localization.lifeline}</Text>
+            <Text style={{ flex: 1 }}>{title}</Text>
             <View>
               <MaterialCommunityIcons
                 name={"close"}
-                key={`${restartText}-close`}
+                key={`${title}-close`}
                 size={25}
                 onPress={() => {
-                  setShow(false);
+                  onDismiss();
                 }}
               />
             </View>
-          </View>
-          {showFiddy ? (
-            <View style={{ padding: 5 }}>
-              <MaterialCommunityIcons.Button
-                name={"circle-half-full"}
-                key={`${restartText}-fiddy-fiddy`}
-                backgroundColor={colors.accent}
-                onPress={() => {
-                  fiddyFiddy();
-                  setShow(false);
-                }}
-              >
-                <Text style={{ fontFamily: "Arial", fontSize: 15 }}>
-                  {"50:50"}
-                </Text>
-              </MaterialCommunityIcons.Button>
-            </View>
-          ) : null}
-          <View style={{ padding: 5 }}>
-            <MaterialCommunityIcons.Button
-              name={"restart"}
-              key={`${restartText}-restart`}
-              backgroundColor={colors.accent}
-              onPress={() => {
-                restartQuiz();
-              }}
-            >
-              <Text style={{ fontFamily: "Arial", fontSize: 15 }}>
-                {restartText}
-              </Text>
-            </MaterialCommunityIcons.Button>
+            {children}
           </View>
         </View>
       </Modal>
