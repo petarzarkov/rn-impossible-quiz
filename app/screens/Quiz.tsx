@@ -36,11 +36,11 @@ export const Quiz: React.FC<{
   isLoading,
   colors,
 }) => {
+  const [isRestarted, setIsRestarted] = useState(false);
   const isInitialMount = useRef(true);
   const [defaultLives, setDefaultLives] = useState(
     Math.round((questions?.length || 3) / 3) || 1,
   );
-  const progress = useRef(new Animated.Value(0)).current;
   const [prevState, updatePrevState] = useState<QuizState | null>(null);
   // eslint-disable-next-line no-spaced-func
   const [currState, updateState] = useReducer<
@@ -65,10 +65,9 @@ export const Quiz: React.FC<{
       lives: defaultLives,
       livesIcons: [...Array(defaultLives).keys()].map(_icon => "heart"),
       lifeline: { hasFiddy: true },
-      progress: useRef(new Animated.Value(0)).current,
     },
   );
-
+  const progress = useRef(new Animated.Value(0)).current;
   const preserveQuizState = () => {
     if (
       !prevState ||
@@ -109,11 +108,11 @@ export const Quiz: React.FC<{
         questions[currState.questionIndx].correctAnswer,
       ].sort(() => Math.random() - 0.5);
 
-      updateState({
-        lifeline: { ...currState.lifeline, hasFiddy: false },
-      });
       storeQuestionsInPlace(JSON.stringify(questions));
     }
+    updateState({
+      lifeline: { ...currState.lifeline, hasFiddy: false },
+    });
   };
 
   const initFromStorage = async () => {
@@ -121,6 +120,11 @@ export const Quiz: React.FC<{
 
     if (prevData) {
       updateState(prevData);
+      Animated.timing(progress, {
+        toValue: prevData.questionIndx,
+        duration: 500,
+        useNativeDriver: false,
+      }).start();
     }
 
     return prevData || currState;
@@ -141,7 +145,7 @@ export const Quiz: React.FC<{
   }, [currState.lives]);
 
   useEffect(() => {
-    if (questions?.length) {
+    if (questions?.length && isRestarted) {
       const defLives = Math.round((questions?.length || 3) / 3) || 1;
       setDefaultLives(defLives);
       updateState({
@@ -149,7 +153,7 @@ export const Quiz: React.FC<{
         livesIcons: [...Array(defLives).keys()].map(_icon => "heart"),
       });
     }
-  }, [questions?.length]);
+  }, [questions?.length, isRestarted]);
 
   const validateAnswer = (selectedOption: string) => {
     const nextCorrectAnswer = questions[currState.questionIndx].correctAnswer;
@@ -305,10 +309,14 @@ export const Quiz: React.FC<{
         {...{
           colors,
           lives,
-          restartHandle: restartQuiz,
+          restartHandle: () => {
+            setIsRestarted(true);
+            restartQuiz();
+          },
           restartText: localization.retryBtn,
           newGameText: localization.newGameText,
           newGameHandle: () => {
+            setIsRestarted(true);
             restartQuiz().then(() => refreshQuestions());
           },
           score,
@@ -323,6 +331,7 @@ export const Quiz: React.FC<{
           restartText: localization.restartQuiz,
           restartQuiz: () => {
             setShowLifeline(false);
+            setIsRestarted(true);
             restartQuiz().then(() => refreshQuestions());
           },
           fiddyFiddy,

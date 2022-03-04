@@ -1,5 +1,3 @@
-import { Animated } from "react-native";
-
 export type QuizState = {
   questionIndx: number;
   answer: string | null;
@@ -14,5 +12,4 @@ export type QuizState = {
   lifeline: {
     hasFiddy: boolean;
   };
-  progress: Animated.Value;
 };
