@@ -3,6 +3,8 @@ export const htmlSymbols: Record<string, string> = {
   "&quot;": "\"",
   "&pi;": "π",
   "&ldquo;": "“",
+  "&rsquo;": "’",
+  "&lsquo;": "‘",
   "&rdquo;": "”",
   "&#039;": "'",
   "&Agrave;": "À",

@@ -5,12 +5,14 @@ export const decodeHtml = (text: string) => {
     return;
   }
   try {
-    return text.replace(/&(.+);/gi, (match: string) => {
+    const decoded = text.replace(/&(.+?);/gi, (match: string) => {
       if (htmlSymbols[match]) {
         return htmlSymbols[match];
       }
       return match;
     });
+
+    return decoded;
   } catch (error) {
     return text;
   }
