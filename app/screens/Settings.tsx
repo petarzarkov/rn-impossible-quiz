@@ -6,7 +6,7 @@ import {
   Text,
   View,
 } from "react-native";
-import { PickLang, PickNumberQuestions, PickTheme } from "../components";
+import { PickBase } from "../components";
 import { Colors } from "../contracts";
 import { base, text } from "../styles";
 import { settings } from "../config";
@@ -38,7 +38,14 @@ export const Settings: React.FC<{
         >
           {localization.themeSettings}
         </Text>
-        <PickTheme {...{ theme, setTheme, colors }} />
+        <PickBase<ColorSchemeName>
+          {...{
+            colors,
+            option: theme,
+            setOption: setTheme,
+            pickOptions: ["dark", "light"],
+          }}
+        />
       </View>
       <View>
         <Text
@@ -46,8 +53,13 @@ export const Settings: React.FC<{
         >
           {localization.langSetting}
         </Text>
-        <PickLang
-          {...{ lang, setLang, languages: settings.languages, colors }}
+        <PickBase<"en" | "bg">
+          {...{
+            colors,
+            option: lang,
+            setOption: setLang,
+            pickOptions: settings.languages as ("en" | "bg")[],
+          }}
         />
       </View>
       <View>
@@ -56,12 +68,12 @@ export const Settings: React.FC<{
         >
           {localization.numberOfQuestions}
         </Text>
-        <PickNumberQuestions
+        <PickBase<"random" | number>
           {...{
-            numberOfQ,
-            setNumberOfQ,
-            numberOfQuestions: settings.numberOfQuestions,
             colors,
+            option: numberOfQ,
+            setOption: setNumberOfQ,
+            pickOptions: settings.numberOfQuestions as (number | "random")[],
           }}
         />
       </View>

@@ -57,8 +57,8 @@ export const ModalBase: React.FC<{
                 }}
               />
             </View>
-            {children}
           </View>
+          {children}
         </View>
       </Modal>
     </View>
