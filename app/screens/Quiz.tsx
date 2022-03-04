@@ -1,7 +1,14 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useState, useEffect, useRef } from "react";
-import { Animated, ScrollView, View, ActivityIndicator } from "react-native";
-import { Button, ProgressBar, Question, Score } from "../components";
+import {
+  Animated,
+  ScrollView,
+  View,
+  ActivityIndicator,
+  Text,
+} from "react-native";
+import { Button, Lifeline, ProgressBar, Question, Score } from "../components";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Colors, QuestionParsed } from "../contracts";
 import { base } from "../styles";
 
@@ -26,6 +33,7 @@ export const Quiz: React.FC<{
   const [livesIcons, setLivesIcons] = useState(
     [...Array(lives).keys()].map(_icon => "heart"),
   );
+  const [showLifeline, setShowLifeline] = useState(false);
   const progress = useRef(new Animated.Value(0)).current;
 
   const showScoreDead = (timeout = 800) => {
@@ -136,6 +144,21 @@ export const Quiz: React.FC<{
           localization,
         }}
       />
+      <View style={{ padding: 5, maxWidth: "50%" }}>
+        <MaterialCommunityIcons.Button
+          name={"pulse"}
+          backgroundColor={colors.accent}
+          size={15}
+          key={`${questions[currQIndx]?.question}-pulse`}
+          onPress={() => {
+            setShowLifeline(true);
+          }}
+        >
+          <Text style={{ fontFamily: "Arial", fontSize: 15 }}>
+            {localization.lifeline}
+          </Text>
+        </MaterialCommunityIcons.Button>
+      </View>
       <Button
         {...{
           colors,
@@ -162,6 +185,20 @@ export const Quiz: React.FC<{
           },
           score,
           showScoreModal,
+          questions,
+          localization,
+        }}
+      />
+      <Lifeline
+        {...{
+          colors,
+          restartText: localization.restartQuiz,
+          restartQuiz: () => {
+            setShowLifeline(false);
+            restartQuiz().then(() => refreshQuestions());
+          },
+          showLifelineModal: showLifeline,
+          setShow: setShowLifeline,
           questions,
           localization,
         }}

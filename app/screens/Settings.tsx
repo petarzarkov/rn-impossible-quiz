@@ -18,7 +18,6 @@ export const Settings: React.FC<{
   localization: Record<string, string>;
   setNumberOfQ: (n: "random" | number) => void;
   numberOfQ: "random" | number;
-  refreshQuestions: () => void;
   theme: ColorSchemeName;
   setTheme: (theme: ColorSchemeName) => void;
 }> = ({
@@ -34,13 +33,17 @@ export const Settings: React.FC<{
   return (
     <ScrollView style={base.containerTab}>
       <View>
-        <Text style={[text.base, settingStyle.box]}>
+        <Text
+          style={[text.base, settingStyle.box, { color: colors.primaryLight }]}
+        >
           {localization.themeSettings}
         </Text>
         <PickTheme {...{ theme, setTheme, colors }} />
       </View>
       <View>
-        <Text style={[text.base, settingStyle.box]}>
+        <Text
+          style={[text.base, settingStyle.box, { color: colors.primaryLight }]}
+        >
           {localization.langSetting}
         </Text>
         <PickLang
@@ -48,7 +51,9 @@ export const Settings: React.FC<{
         />
       </View>
       <View>
-        <Text style={[text.base, settingStyle.box]}>
+        <Text
+          style={[text.base, settingStyle.box, { color: colors.primaryLight }]}
+        >
           {localization.numberOfQuestions}
         </Text>
         <PickNumberQuestions

@@ -44,11 +44,11 @@ export const Question: React.FC<{
             alignItems: "center",
           }}
         >
-          <Text style={text.base}>
+          <Text style={[text.base, { color: colors.primaryLight }]}>
             {" "}
             <Text
               style={{
-                color: colors.text,
+                color: colors.accent,
                 fontSize: 20,
                 opacity: 0.6,
                 marginRight: 2,
@@ -58,22 +58,22 @@ export const Question: React.FC<{
             </Text>{" "}
             / {questions.length}
           </Text>
-          <Text style={text.base}>
+          <Text style={[text.base, { color: colors.primaryLight }]}>
             {localization.score}: {score}
           </Text>
         </View>
         <View>
-          <Text style={text.base}>
+          <Text style={[text.base, { color: colors.primaryLight }]}>
             {localization.difficulty}: {questions[currQIndx]?.difficulty}
           </Text>
         </View>
         <View>
-          <Text style={text.base}>
+          <Text style={[text.base, { color: colors.primaryLight }]}>
             {localization.category}: {questions[currQIndx]?.category}
           </Text>
         </View>
         <View>
-          <Text style={text.base}>
+          <Text style={[text.base, { color: colors.primaryLight }]}>
             {localization.lives}:{" "}
             {livesIcons.map((lIcon, icoIndex) => (
               <MaterialCommunityIcons

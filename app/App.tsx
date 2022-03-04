@@ -5,6 +5,7 @@ import {
   StatusBar,
   ImageBackground,
   useColorScheme,
+  ColorSchemeName,
 } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -16,35 +17,94 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { Quiz, Settings } from "./screens";
 import { getTheme } from "./utils";
+import { useAsyncStorage } from "@react-native-async-storage/async-storage";
+import { storeData } from "./store";
 
 const Tab = createBottomTabNavigator();
 
 const App = () => {
   const isInitialMount = useRef(true);
-  const [theme, setTheme] = useState(useColorScheme());
+  const { getItem: getSettings } = useAsyncStorage("@storage_latest_settings");
+  const [theme, setThemeLocal] = useState(useColorScheme());
+
   const [themeColors, setColors] = useState(getTheme(theme));
   const isDarkMode = themeColors.isDarkMode;
   const colors = themeColors.colors;
-  const [lang, setLang] = useState<keyof typeof localization>("en");
+  const [lang, setLangLocal] = useState<keyof typeof localization>("en");
   const [isLoading, setLoading] = useState(true);
   const [questions, setQuestions] = useState<QuestionParsed[] | null>(null);
-  const [numberOfQ, setNumberOfQ] = useState<number | "random">("random");
+  const [numberOfQ, setNumberOfQLocal] = useState<number | "random">("random");
+  const { getItem: getQuestions, setItem: storeQuestions } = useAsyncStorage(
+    "@storage_latest_questions",
+  );
+
+  const setTheme = (t: ColorSchemeName) => {
+    setThemeLocal(t);
+    storeData("latest_settings", { theme: t, numberOfQ, lang });
+  };
+
+  const setLang = (l: "bg" | "en") => {
+    setLangLocal(l);
+    storeData("latest_settings", { theme, numberOfQ, lang: l });
+  };
+
+  const setNumberOfQ = (n: number | "random") => {
+    setNumberOfQLocal(n);
+    storeData("latest_settings", { theme, numberOfQ: n, lang });
+  };
 
   const refreshQuestions = async () => {
     setLoading(true);
     const newQuestions = await requests.fetchQuestions(numberOfQ);
     if (newQuestions) {
       setQuestions(newQuestions);
+      storeQuestions(JSON.stringify(newQuestions));
     }
 
     setLoading(false);
+  };
+
+  const onMount = async () => {
+    setLoading(true);
+    const settingsRaw = await getSettings();
+    if (settingsRaw) {
+      try {
+        const settingsParsed = JSON.parse(settingsRaw);
+
+        if (settingsParsed.theme) {
+          setThemeLocal(settingsParsed.theme);
+        }
+
+        if (settingsParsed.numberOfQ) {
+          setNumberOfQLocal(settingsParsed.numberOfQ);
+        }
+
+        if (settingsParsed.lang) {
+          setLangLocal(settingsParsed.lang);
+        }
+      } catch (error) {}
+    }
+    const questionsRaw = await getQuestions();
+    if (!questionsRaw) {
+      refreshQuestions();
+      return;
+    }
+
+    try {
+      const questionsParsed = JSON.parse(questionsRaw) as QuestionParsed[];
+      setQuestions(questionsParsed);
+      setLoading(false);
+    } catch (error) {
+      refreshQuestions();
+      return;
+    }
   };
 
   useEffect(() => {
     // Did mount
     if (isInitialMount.current) {
       isInitialMount.current = false;
-      refreshQuestions();
+      onMount();
       return;
     }
   });
@@ -85,7 +145,7 @@ const App = () => {
             screenOptions={{
               tabBarStyle: { borderTopWidth: 0 },
               tabBarActiveBackgroundColor: colors.background,
-              tabBarInactiveBackgroundColor: colors.primary,
+              tabBarInactiveBackgroundColor: colors.border,
               headerShown: false,
               tabBarActiveTintColor: colors.primary,
               tabBarInactiveTintColor: colors.primaryLight,
@@ -138,7 +198,6 @@ const App = () => {
                     setLang,
                     numberOfQ,
                     setNumberOfQ,
-                    refreshQuestions,
                     theme,
                     setTheme,
                   }}

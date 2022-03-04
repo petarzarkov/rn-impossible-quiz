@@ -12,6 +12,8 @@ export const localization = {
     langSetting: "Избери език",
     themeSettings: "Тема",
     numberOfQuestions: "Брой въпроси",
+    restartQuiz: "Рестартирай Викторината",
+    lifeline: "Жокери",
   },
   en: {
     difficulty: "Difficulty",
@@ -26,5 +28,7 @@ export const localization = {
     langSetting: "Choose language",
     themeSettings: "Theme",
     numberOfQuestions: "Number of questions",
+    restartQuiz: "Restart Quiz",
+    lifeline: "Lifeline",
   },
 };
