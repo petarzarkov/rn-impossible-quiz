@@ -2,65 +2,62 @@
 import React from "react";
 import { View, Text } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { Colors, QuestionParsed } from "../contracts";
+import { useQuizProvider } from "../hooks";
 import { ModalBase } from "./base";
 
 export const Lifeline: React.FC<{
-  colors: Colors;
   showLifelineModal: boolean;
-  questions: QuestionParsed[];
   restartQuiz: () => void;
-  restartText: string;
-  localization: Record<string, string>;
   setShow: (show: boolean) => void;
   fiddyFiddy: () => void;
   showFiddy: boolean;
-}> = ({
-  showLifelineModal,
-  restartQuiz,
-  restartText,
-  colors,
-  setShow,
-  fiddyFiddy,
-  showFiddy,
-  localization,
-}) => {
+}> = ({ showLifelineModal, restartQuiz, setShow, fiddyFiddy, showFiddy }) => {
+  const { colors, localization } = useQuizProvider() || {};
+
   return (
-    <View>
+    <>
       <ModalBase
         visible={showLifelineModal}
         onDismiss={() => setShow(!showLifelineModal)}
-        colors={colors}
         title={localization.lifeline}
       >
-        {showFiddy ? (
+        <View
+          style={{
+            flexDirection: "column",
+            justifyContent: "space-between",
+            alignItems: "center",
+            minHeight: 180,
+          }}
+        >
+          {showFiddy ? (
+            <View style={{ padding: 5 }}>
+              <MaterialCommunityIcons.Button
+                name={"circle-half-full"}
+                key={`${localization.restartQuiz}-fiddy-fiddy`}
+                backgroundColor={colors.accent}
+                onPress={() => {
+                  fiddyFiddy();
+                  setShow(false);
+                }}
+              >
+                <Text>{"50:50"}</Text>
+              </MaterialCommunityIcons.Button>
+            </View>
+          ) : null}
           <View style={{ padding: 5 }}>
             <MaterialCommunityIcons.Button
-              name={"circle-half-full"}
-              key={`${restartText}-fiddy-fiddy`}
+              name={"restart"}
+              key={`${localization.restartQuiz}-restart`}
               backgroundColor={colors.accent}
               onPress={() => {
-                fiddyFiddy();
-                setShow(false);
+                restartQuiz();
               }}
             >
-              <Text>{"50:50"}</Text>
+              <Text>{localization.restartQuiz}</Text>
             </MaterialCommunityIcons.Button>
           </View>
-        ) : null}
-        <View style={{ padding: 5 }}>
-          <MaterialCommunityIcons.Button
-            name={"restart"}
-            key={`${restartText}-restart`}
-            backgroundColor={colors.accent}
-            onPress={() => {
-              restartQuiz();
-            }}
-          >
-            <Text>{restartText}</Text>
-          </MaterialCommunityIcons.Button>
         </View>
       </ModalBase>
-    </View>
+    </>
   );
 };

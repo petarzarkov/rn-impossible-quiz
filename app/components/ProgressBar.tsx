@@ -1,12 +1,12 @@
 import React from "react";
 import { View, Animated, StyleSheet } from "react-native";
-import { Colors } from "../contracts";
+import { useQuizProvider } from "../hooks";
 
 export const ProgressBar: React.FC<{
-  colors: Colors;
   progress: Animated.Value;
   upper: number;
-}> = ({ progress, upper, colors }) => {
+}> = ({ progress, upper }) => {
+  const { colors } = useQuizProvider() || {};
   const progressAnim = progress.interpolate({
     inputRange: [0, upper],
     outputRange: ["0%", "100%"],

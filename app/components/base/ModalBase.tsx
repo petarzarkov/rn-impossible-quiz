@@ -8,14 +8,14 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { Colors } from "../../contracts";
+import { useQuizProvider } from "../../hooks";
 
 export const ModalBase: React.FC<{
-  colors: Colors;
   visible: boolean;
   onDismiss: () => void;
   title: string;
-}> = ({ colors, visible, onDismiss, title, children }) => {
+}> = ({ visible, onDismiss, title, children }) => {
+  const { colors } = useQuizProvider() || {};
   return (
     <View style={[styles.centeredView]}>
       <Modal
@@ -46,10 +46,11 @@ export const ModalBase: React.FC<{
               padding: 5,
             }}
           >
-            <Text style={{ flex: 1 }}>{title}</Text>
+            <Text style={{ flex: 1, color: colors.border }}>{title}</Text>
             <View>
               <MaterialCommunityIcons
                 name={"close"}
+                color={colors.border}
                 key={`${title}-close`}
                 size={25}
                 onPress={() => {
@@ -82,7 +83,6 @@ const styles = StyleSheet.create({
   modalView: {
     margin: 20,
     borderRadius: 20,
-    padding: 5,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {

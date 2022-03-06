@@ -15,28 +15,22 @@ import {
   Score,
 } from "../components";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { Colors, QuestionParsed, QuizState } from "../contracts";
+import { QuizState } from "../contracts";
 import { base } from "../styles";
 import { getData, storeData } from "../store";
 import { HotObj } from "../utils";
-import { useInterval } from "../hooks";
+import { useInterval, useQuizProvider } from "../hooks";
 
-export const Quiz: React.FC<{
-  questions: QuestionParsed[];
-  isLoading: boolean;
-  refreshQuestions: () => void;
-  storeQuestionsInPlace: (questions: string) => void;
-  localization: Record<string, string>;
-  colors: Colors;
-}> = ({
-  questions,
-  refreshQuestions,
-  storeQuestionsInPlace,
-  localization,
-  isLoading,
-  colors,
-}) => {
-  const [isRestarted, setIsRestarted] = useState(false);
+export const Quiz: React.FC = () => {
+  const {
+    colors,
+    localization,
+    isLoading,
+    questions,
+    refreshQuestions,
+    storeQuestionsInPlace,
+  } = useQuizProvider() || {};
+  const [isPrev, setIsPrev] = useState(false);
   const isInitialMount = useRef(true);
   const [defaultLives, setDefaultLives] = useState(
     Math.round((questions?.length || 3) / 3) || 1,
@@ -108,7 +102,7 @@ export const Quiz: React.FC<{
         questions[currState.questionIndx].correctAnswer,
       ].sort(() => Math.random() - 0.5);
 
-      storeQuestionsInPlace(JSON.stringify(questions));
+      storeQuestionsInPlace(questions);
     }
     updateState({
       lifeline: { ...currState.lifeline, hasFiddy: false },
@@ -120,6 +114,7 @@ export const Quiz: React.FC<{
 
     if (prevData) {
       updateState(prevData);
+      setIsPrev(true);
       Animated.timing(progress, {
         toValue: prevData.questionIndx,
         duration: 500,
@@ -145,7 +140,7 @@ export const Quiz: React.FC<{
   }, [currState.lives]);
 
   useEffect(() => {
-    if (questions?.length && isRestarted) {
+    if (questions?.length && !isPrev) {
       const defLives = Math.round((questions?.length || 3) / 3) || 1;
       setDefaultLives(defLives);
       updateState({
@@ -153,7 +148,7 @@ export const Quiz: React.FC<{
         livesIcons: [...Array(defLives).keys()].map(_icon => "heart"),
       });
     }
-  }, [questions?.length, isRestarted]);
+  }, [questions?.length, isPrev]);
 
   const validateAnswer = (selectedOption: string) => {
     const nextCorrectAnswer = questions[currState.questionIndx].correctAnswer;
@@ -258,20 +253,17 @@ export const Quiz: React.FC<{
     </View>
   ) : (
     <ScrollView style={[base.containerTab]}>
-      <ProgressBar {...{ progress, upper: questions.length, colors }} />
+      <ProgressBar {...{ progress, upper: questions.length }} />
       <Question
         {...{
-          colors,
           livesIcons,
           show: !showScoreModal,
           score,
           currQIndx: questionIndx,
-          questions,
           answersDisabled,
           correctAnswer,
           currAnswer: answer,
           validateAnswer,
-          localization,
         }}
       />
       {!answersDisabled ? (
@@ -293,7 +285,6 @@ export const Quiz: React.FC<{
       ) : null}
       <ButtonBase
         {...{
-          colors,
           btnText: localization.nextBtn,
           show: showNextButton && !showScoreModal && lives !== 0,
           handlePress: handleNext,
@@ -307,31 +298,21 @@ export const Quiz: React.FC<{
       <View style={{ padding: 20 }} />
       <Score
         {...{
-          colors,
           lives,
           restartHandle: () => {
-            setIsRestarted(true);
             restartQuiz();
           },
-          restartText: localization.retryBtn,
-          newGameText: localization.newGameText,
           newGameHandle: () => {
-            setIsRestarted(true);
             restartQuiz().then(() => refreshQuestions());
           },
           score,
           showScoreModal,
-          questions,
-          localization,
         }}
       />
       <Lifeline
         {...{
-          colors,
-          restartText: localization.restartQuiz,
           restartQuiz: () => {
             setShowLifeline(false);
-            setIsRestarted(true);
             restartQuiz().then(() => refreshQuestions());
           },
           fiddyFiddy,
@@ -339,8 +320,6 @@ export const Quiz: React.FC<{
             lifeline.hasFiddy && questions[questionIndx]?.answers?.length > 2,
           showLifelineModal: showLifeline,
           setShow: setShowLifeline,
-          questions,
-          localization,
         }}
       />
     </ScrollView>

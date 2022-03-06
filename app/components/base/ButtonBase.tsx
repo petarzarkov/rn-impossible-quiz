@@ -1,26 +1,23 @@
 import React from "react";
 import { Text, TextStyle, TouchableOpacity, ViewStyle } from "react-native";
-import { Colors } from "../../contracts";
+import { useQuizProvider } from "../../hooks";
 
 export const ButtonBase: React.FC<{
-  colors: Colors;
   show?: boolean;
   handlePress: () => void;
   btnText: string | number;
   btnStyle?: ViewStyle;
   btnTextStyle?: TextStyle;
   disabled?: boolean;
-}> = (
-  {
-    show = true,
-    handlePress,
-    btnText,
-    btnStyle,
-    btnTextStyle,
-    disabled = false,
-    colors,
-  } = {} as any,
-) => {
+}> = ({
+  show = true,
+  handlePress,
+  btnText,
+  btnStyle,
+  btnTextStyle,
+  disabled = false,
+}) => {
+  const { colors } = useQuizProvider() || {};
   if (show) {
     return (
       <TouchableOpacity
@@ -41,7 +38,7 @@ export const ButtonBase: React.FC<{
         <Text
           style={[
             // eslint-disable-next-line react-native/no-inline-styles
-            { fontSize: 20, color: colors.background, textAlign: "center" },
+            { fontSize: 20, color: colors.border, textAlign: "center" },
             btnTextStyle && btnTextStyle,
           ]}
         >

@@ -1,40 +1,40 @@
 import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { PickBase } from "../components";
-import { Colors } from "../contracts";
 import { base, text } from "../styles";
 import { settings } from "../config";
+import { useQuizProvider } from "../hooks";
 
-export const Settings: React.FC<{
-  colors: Colors;
-  lang: "en" | "bg";
-  setLang: (lang: "en" | "bg") => void;
-  localization: Record<string, string>;
-  setNumberOfQ: (n: "random" | number) => void;
-  numberOfQ: "random" | number;
-  theme: "light" | "dark";
-  setTheme: (theme: "light" | "dark") => void;
-}> = ({
-  lang,
-  setLang,
-  localization,
-  setNumberOfQ,
-  numberOfQ,
-  theme,
-  setTheme,
-  colors,
-}) => {
+export const Settings: React.FC = () => {
+  const {
+    colors,
+    setTheme,
+    theme,
+    lang,
+    setLang,
+    localization,
+    setNumberOfQ,
+    numberOfQ,
+  } = useQuizProvider() || {};
+
+  const SettingsHeader = ({ header }: { header: string }) => (
+    <Text
+      style={[
+        text.base,
+        settingStyle.box,
+        { color: colors.text, backgroundColor: colors.primaryLight },
+      ]}
+    >
+      {header}
+    </Text>
+  );
+
   return (
-    <ScrollView style={base.containerTab}>
+    <ScrollView style={[base.containerTab]}>
       <View>
-        <Text
-          style={[text.base, settingStyle.box, { color: colors.primaryLight }]}
-        >
-          {localization.themeSettings}
-        </Text>
+        <SettingsHeader header={localization.themeSettings} />
         <PickBase<"light" | "dark">
           {...{
-            colors,
             option: theme,
             setOption: setTheme,
             pickOptions: ["dark", "light"],
@@ -42,14 +42,9 @@ export const Settings: React.FC<{
         />
       </View>
       <View>
-        <Text
-          style={[text.base, settingStyle.box, { color: colors.primaryLight }]}
-        >
-          {localization.langSetting}
-        </Text>
+        <SettingsHeader header={localization.langSetting} />
         <PickBase<"en" | "bg">
           {...{
-            colors,
             option: lang,
             setOption: setLang,
             pickOptions: settings.languages as ("en" | "bg")[],
@@ -57,14 +52,9 @@ export const Settings: React.FC<{
         />
       </View>
       <View>
-        <Text
-          style={[text.base, settingStyle.box, { color: colors.primaryLight }]}
-        >
-          {localization.numberOfQuestions}
-        </Text>
+        <SettingsHeader header={localization.numberOfQuestions} />
         <PickBase<"random" | number>
           {...{
-            colors,
             option: numberOfQ,
             setOption: setNumberOfQ,
             pickOptions: settings.numberOfQuestions as (number | "random")[],
@@ -76,5 +66,5 @@ export const Settings: React.FC<{
 };
 
 const settingStyle = StyleSheet.create({
-  box: { textAlign: "center", padding: 15 },
+  box: { textAlign: "center", padding: 15, margin: 5, borderRadius: 15 },
 });

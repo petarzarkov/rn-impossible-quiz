@@ -1,6 +1,8 @@
 export const htmlSymbols: Record<string, string> = {
   // eslint-disable-next-line prettier/prettier
   "&quot;": "\"",
+  "&amp;": "&",
+  "&shy;": "",
   "&pi;": "π",
   "&ldquo;": "“",
   "&rsquo;": "’",

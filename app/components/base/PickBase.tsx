@@ -1,20 +1,19 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import { Colors } from "../../contracts";
+import { useQuizProvider } from "../../hooks";
 import { ButtonBase } from "./ButtonBase";
 
 export function PickBase<Option extends string | number>({
-  colors,
   pickOptions,
   option,
   setOption,
 }: {
-  colors: Colors;
   option: Option;
   setOption: (opt: Option) => void;
   pickOptions: Option[];
   children?: React.ReactNode;
 }): React.ReactElement | null {
+  const { colors } = useQuizProvider() || {};
   return (
     <View style={[styles.pickContainer]}>
       {pickOptions.map((l, ind) => (

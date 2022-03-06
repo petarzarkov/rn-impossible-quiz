@@ -1,33 +1,18 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from "react";
 import { View, Text, Modal } from "react-native";
-import { Colors, QuestionParsed } from "../contracts";
 import { ButtonBase } from "./base";
 import ConfettiCannon from "react-native-confetti-cannon";
+import { useQuizProvider } from "../hooks";
 
 export const Score: React.FC<{
-  colors: Colors;
   lives: number;
   score: number;
   showScoreModal: boolean;
-  questions: QuestionParsed[];
   restartHandle: () => void;
-  restartText: string;
-  newGameText: string;
   newGameHandle: () => void;
-  localization: Record<string, string>;
-}> = ({
-  lives,
-  score,
-  showScoreModal,
-  questions,
-  restartHandle,
-  restartText,
-  newGameText,
-  newGameHandle,
-  localization,
-  colors,
-}) => {
+}> = ({ lives, score, showScoreModal, restartHandle, newGameHandle }) => {
+  const { colors, localization, questions } = useQuizProvider() || {};
   const hasWon = questions.length === score || lives > 0;
   return (
     <Modal animationType="slide" transparent={true} visible={showScoreModal}>
@@ -81,9 +66,8 @@ export const Score: React.FC<{
           </View>
           <ButtonBase
             {...{
-              colors,
               handlePress: restartHandle,
-              btnText: restartText,
+              btnText: localization.retryBtn,
               btnStyle: {
                 borderRadius: 20,
               },
@@ -91,9 +75,8 @@ export const Score: React.FC<{
           />
           <ButtonBase
             {...{
-              colors,
               handlePress: newGameHandle,
-              btnText: newGameText,
+              btnText: localization.newGameText,
               btnStyle: {
                 marginTop: 25,
                 borderRadius: 20,

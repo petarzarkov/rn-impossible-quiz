@@ -4,6 +4,7 @@ import { decodeHtml, randomNumber } from "../utils";
 import { QuestionRaw, QuestionParsed } from "../contracts";
 
 const getNumbers = (n: number): [number, number, number] => {
+  // [1.69, 4.2, 8];
   switch (n) {
     case 20:
       return [12, 5, 3];
@@ -43,8 +44,10 @@ const getQuestions = async (
           return {
             question: decodeHtml(q.question),
             answers: [
-              ...q.incorrect_answers.map(decodeHtml),
-              correctAnswer,
+              ...new Set([
+                ...q.incorrect_answers.map(decodeHtml),
+                correctAnswer,
+              ]),
             ].sort(() => Math.random() - 0.5),
             correctAnswer,
             category: q.category,
@@ -70,10 +73,10 @@ const getQuestions = async (
             ? q.incorrectAnswers.slice(0, 3)
             : q.incorrectAnswers;
         return {
-          question: q.question,
-          answers: [...incorrectAnswers.map(decodeHtml), correctAnswer].sort(
-            () => Math.random() - 0.5,
-          ),
+          question: decodeHtml(q.question),
+          answers: [
+            ...new Set([...incorrectAnswers.map(decodeHtml), correctAnswer]),
+          ].sort(() => Math.random() - 0.5),
           category: q.category,
           correctAnswer,
           difficulty: ["easy", "medium", "hard"][Math.floor(Math.random() * 3)],
@@ -95,9 +98,9 @@ const getQuestions = async (
         }
         return {
           question: decodeHtml(q.question),
-          answers: [...q.incorrect_answers.map(decodeHtml), correctAnswer].sort(
-            () => Math.random() - 0.5,
-          ),
+          answers: [
+            ...new Set([...q.incorrect_answers.map(decodeHtml), correctAnswer]),
+          ].sort(() => Math.random() - 0.5),
           correctAnswer,
           category: q.category || "Unknown",
           difficulty: q.difficulty || "easy",

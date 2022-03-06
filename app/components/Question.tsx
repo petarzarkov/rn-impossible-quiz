@@ -3,33 +3,28 @@ import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { text } from "../styles";
-import { Colors, QuestionParsed } from "../contracts";
+import { useQuizProvider } from "../hooks";
 
 export const Question: React.FC<{
-  colors: Colors;
   livesIcons: string[];
   show?: boolean;
   score: number;
   currQIndx: number;
-  questions: QuestionParsed[];
   answersDisabled: boolean;
   correctAnswer: string | null;
   currAnswer: string | null;
   validateAnswer: (answ: string) => void;
-  localization: Record<string, string>;
 }> = ({
   livesIcons,
   show = true,
   score,
   currQIndx,
-  questions,
   answersDisabled,
   correctAnswer,
   currAnswer,
   validateAnswer,
-  localization,
-  colors,
 }) => {
+  const { colors, localization, questions } = useQuizProvider() || {};
   if (show) {
     return (
       <View
