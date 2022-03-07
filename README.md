@@ -1,4 +1,5 @@
 # ImpossibleQuiz
+- Over 4000 Trivia Questions
 <p align="left">
   <a href="https://reactnative.dev/" target="blank"><img title="ReactNative" alt="NestJS" width="26" src="https://reactnative.dev/img/pwa/manifest-icon-512.png" /></a>
   <a href="https://www.javascript.com/" target="blank"><img title="JavaScript" alt="JavaScript" width="26" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/javascript/javascript.png" /></a>
@@ -8,24 +9,24 @@
 
 ## Installation
 
-```bash
-$ npm install
+```
+npm install
 ```
 
 ## Running the app
 
 ```bash
 # start the metro bundler
-$ npm start
+npm start
 # build and run the app
-$ npm run android
+npm run android
 # or
-$ npm run ios
+npm run ios
 ```
 
 ## Test
 
 ```bash
 # unit tests
-$ npm run test
+npm run test
 ```
