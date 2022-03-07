@@ -12,4 +12,5 @@ export type QuizState = {
   lifeline: {
     hasFiddy: boolean;
   };
+  isBackup: boolean;
 };

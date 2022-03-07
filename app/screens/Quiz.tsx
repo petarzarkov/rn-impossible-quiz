@@ -30,16 +30,12 @@ export const Quiz: React.FC = () => {
     refreshQuestions,
     storeQuestionsInPlace,
   } = useQuizProvider() || {};
-  const [isPrev, setIsPrev] = useState(false);
   const isInitialMount = useRef(true);
   const [defaultLives, setDefaultLives] = useState(
     Math.round((questions?.length || 3) / 3) || 1,
   );
   const [prevState, updatePrevState] = useState<QuizState | null>(null);
-  // eslint-disable-next-line no-spaced-func
-  const [currState, updateState] = useReducer<
-    (state: QuizState, updates: Partial<QuizState>) => QuizState
-  >(
+  const [currState, updateState] = useReducer<(state: QuizState, updates: Partial<QuizState>) => QuizState>(
     (state, updates) => {
       updatePrevState(state);
       return {
@@ -47,19 +43,20 @@ export const Quiz: React.FC = () => {
         ...updates,
       };
     },
-    {
-      questionIndx: 0,
-      answer: null,
-      correctAnswer: null,
-      answersDisabled: false,
-      score: 0,
-      showNextButton: false,
-      showScoreModal: false,
-      showLifeline: false,
-      lives: defaultLives,
-      livesIcons: [...Array(defaultLives).keys()].map(_icon => "heart"),
-      lifeline: { hasFiddy: true },
-    },
+  {
+    questionIndx: 0,
+    answer: null,
+    correctAnswer: null,
+    answersDisabled: false,
+    score: 0,
+    showNextButton: false,
+    showScoreModal: false,
+    showLifeline: false,
+    lives: defaultLives,
+    livesIcons: [...Array(defaultLives).keys()].map(_icon => "heart"),
+    lifeline: { hasFiddy: true },
+    isBackup: false,
+  },
   );
   const progress = useRef(new Animated.Value(0)).current;
   const preserveQuizState = () => {
@@ -69,7 +66,7 @@ export const Quiz: React.FC = () => {
       !HotObj.shallowEquals(prevState.lifeline, currState.lifeline)
     ) {
       updatePrevState(currState);
-      storeData("latest_quiz", currState);
+      void storeData("latest_quiz", currState);
     }
   };
 
@@ -113,34 +110,31 @@ export const Quiz: React.FC = () => {
     const prevData = await getData<QuizState>("latest_quiz");
 
     if (prevData) {
-      updateState(prevData);
-      setIsPrev(true);
+      updateState({ ...prevData, isBackup: true });
       Animated.timing(progress, {
         toValue: prevData.questionIndx,
         duration: 500,
         useNativeDriver: false,
       }).start();
     }
-
-    return prevData || currState;
   };
 
   useEffect(() => {
     // Did mount
     if (isInitialMount.current) {
       isInitialMount.current = false;
-      initFromStorage();
+      void initFromStorage();
     }
   });
 
   useEffect(() => {
     if (currState.lives === 0) {
-      showScoreDead();
+      void showScoreDead();
     }
   }, [currState.lives]);
 
   useEffect(() => {
-    if (questions?.length && !isPrev) {
+    if (questions?.length && !currState.isBackup) {
       const defLives = Math.round((questions?.length || 3) / 3) || 1;
       setDefaultLives(defLives);
       updateState({
@@ -148,7 +142,7 @@ export const Quiz: React.FC = () => {
         livesIcons: [...Array(defLives).keys()].map(_icon => "heart"),
       });
     }
-  }, [questions?.length, isPrev]);
+  }, [questions?.length, currState.isBackup]);
 
   const validateAnswer = (selectedOption: string) => {
     const nextCorrectAnswer = questions[currState.questionIndx].correctAnswer;
@@ -217,6 +211,7 @@ export const Quiz: React.FC = () => {
       showNextButton: false,
       showScoreModal: false,
       lifeline: { ...currState.lifeline, hasFiddy: true },
+      isBackup: false,
     });
 
     return new Promise(resolve => {
@@ -300,10 +295,10 @@ export const Quiz: React.FC = () => {
         {...{
           lives,
           restartHandle: () => {
-            restartQuiz();
+            void restartQuiz();
           },
           newGameHandle: () => {
-            restartQuiz().then(() => refreshQuestions());
+            void restartQuiz().then(() => refreshQuestions());
           },
           score,
           showScoreModal,
@@ -313,7 +308,7 @@ export const Quiz: React.FC = () => {
         {...{
           restartQuiz: () => {
             setShowLifeline(false);
-            restartQuiz().then(() => refreshQuestions());
+            void restartQuiz().then(() => refreshQuestions());
           },
           fiddyFiddy,
           showFiddy:

@@ -3,7 +3,7 @@ import React from "react";
 import { View, Text } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useQuizProvider } from "../hooks";
-import { ModalBase } from "./base";
+import { AlertBase, ModalBase } from "./base";
 
 export const Lifeline: React.FC<{
   showLifelineModal: boolean;
@@ -50,7 +50,17 @@ export const Lifeline: React.FC<{
               key={`${localization.restartQuiz}-restart`}
               backgroundColor={colors.accent}
               onPress={() => {
-                restartQuiz();
+                setShow(false);
+                return AlertBase({
+                  title: "Are you sure?",
+                  message: "You want to restart?",
+                  onCancel: () => {
+                    setShow(true);
+                  },
+                  onOk: () => {
+                    restartQuiz();
+                  },
+                });
               }}
             >
               <Text>{localization.restartQuiz}</Text>

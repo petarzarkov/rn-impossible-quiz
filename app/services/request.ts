@@ -27,8 +27,10 @@ export const request = async ({
       ...(payload && { body: JSON.stringify(payload) }),
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const res = await raw[parser]();
     return {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       result: res,
       elapsed: elapsed(),
       status: raw.status || 200,

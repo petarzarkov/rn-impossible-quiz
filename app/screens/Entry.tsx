@@ -24,6 +24,7 @@ export const Entry = () => {
     >
       <ImageBackground
         source={
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           isDarkMode
             ? require("../assets/images/stars-dark.png")
             : require("../assets/images/stars-light.png")

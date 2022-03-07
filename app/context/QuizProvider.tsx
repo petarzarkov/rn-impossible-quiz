@@ -19,7 +19,7 @@ export class QuizProvider extends React.Component {
   };
 
   storeQuestions = (questions: QuestionParsed[]) => {
-    storeData("latest_questions", JSON.stringify(questions));
+    void storeData("latest_questions", JSON.stringify(questions));
   };
 
   refreshQuestions = async () => {
@@ -27,7 +27,7 @@ export class QuizProvider extends React.Component {
     const newQuestions = await requests.fetchQuestions(this.state.numberOfQ);
     if (newQuestions) {
       this.setState({ questions: newQuestions });
-      storeData("latest_questions", JSON.stringify(newQuestions));
+      void storeData("latest_questions", JSON.stringify(newQuestions));
     }
 
     this.setState({ isLoading: false });
@@ -51,7 +51,7 @@ export class QuizProvider extends React.Component {
 
     const questions = await getData<QuestionParsed[]>("latest_questions");
     if (!questions) {
-      this.refreshQuestions();
+      void this.refreshQuestions();
       return;
     }
 
@@ -60,7 +60,7 @@ export class QuizProvider extends React.Component {
 
   setLang = (l: "bg" | "en") => {
     this.setState({ lang: l, localization: localization[l] });
-    storeData("latest_settings", {
+    void storeData("latest_settings", {
       theme: this.state.theme,
       numberOfQ: this.state.numberOfQ,
       lang: l,
@@ -69,7 +69,7 @@ export class QuizProvider extends React.Component {
 
   setNumberOfQ = (n: number | "random") => {
     this.setState({ numberOfQ: n });
-    storeData("latest_settings", {
+    void storeData("latest_settings", {
       theme: this.state.theme,
       numberOfQ: n,
       lang: this.state.lang,
@@ -78,7 +78,7 @@ export class QuizProvider extends React.Component {
 
   setTheme = (t: "light" | "dark") => {
     this.setState({ theme: t, colors: getTheme(t).colors });
-    storeData("latest_settings", {
+    void storeData("latest_settings", {
       theme: t,
       numberOfQ: this.state.numberOfQ,
       lang: this.state.lang,

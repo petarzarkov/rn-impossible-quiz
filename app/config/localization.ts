@@ -21,7 +21,7 @@ export const localization = {
     lives: "Lives",
     nextBtn: "Next",
     retryBtn: "Repeat same game",
-    congratz: "Grant!",
+    congratz: "Congratz!",
     fail: "Next time :/",
     newGameText: "New game",
     score: "Score",

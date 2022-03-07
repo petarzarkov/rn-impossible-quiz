@@ -102,14 +102,14 @@ export const Question: React.FC<{
                   answer === correctAnswer
                     ? colors.success
                     : answer === currAnswer
-                    ? colors.error
-                    : colors.background + "40",
+                      ? colors.error
+                      : colors.background + "40",
                 backgroundColor:
                   answer === correctAnswer
                     ? colors.success + "20"
                     : answer === currAnswer
-                    ? colors.error + "20"
-                    : colors.background + "20",
+                      ? colors.error + "20"
+                      : colors.background + "20",
                 minHeight: 60,
                 maxHeight: 120,
                 borderRadius: 20,

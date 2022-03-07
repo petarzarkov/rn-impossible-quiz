@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
 import { request } from "./request";
 import defaultQuestions from "./defaultQuestions";
 import { decodeHtml, randomNumber } from "../utils";
@@ -63,6 +67,7 @@ const getQuestions = async (
     timeout,
   }).then(r => {
     if (r.status === 200 && r?.result?.length) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return r.result.map((q: any) => {
         const correctAnswer = decodeHtml(q.correctAnswer);
         if (!correctAnswer) {
