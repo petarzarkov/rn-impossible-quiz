@@ -13,13 +13,14 @@ export const Dark: Colors = {
   primary: "#424242",
   primaryLight: "#8d8d8d",
   text: "#eeeeee",
-  background: "#bdbdbd",
+  background: "#616161",
 };
 
 export const Light: Colors = {
   ...Base,
+  accent: "#066100",
   primary: "#eeeeee",
   primaryLight: "#ffffff",
   text: "#f5f5f5",
-  background: "#616161",
+  background: "#bdbdbd",
 };

@@ -1,5 +1,7 @@
 export const localization = {
   bg: {
+    gameTitle: "Невъзможната Викторина",
+    settingsTitle: "Настройки",
     difficulty: "Трудност",
     category: "Категория",
     lives: "Животи",
@@ -16,6 +18,8 @@ export const localization = {
     lifeline: "Жокери",
   },
   en: {
+    gameTitle: "Impossible Quiz",
+    settingsTitle: "Settings",
     difficulty: "Difficulty",
     category: "Category",
     lives: "Lives",

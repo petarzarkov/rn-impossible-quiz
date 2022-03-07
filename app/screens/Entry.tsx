@@ -13,7 +13,7 @@ import { getTheme } from "../utils";
 const Tab = createBottomTabNavigator();
 
 export const Entry = () => {
-  const { theme } = useQuizProvider() || {};
+  const { theme, localization } = useQuizProvider() || {};
   const { isDarkMode, colors } = getTheme(theme);
 
   return (
@@ -59,15 +59,21 @@ export const Entry = () => {
               tabBarItemStyle: { borderRadius: 15 },
               tabBarActiveBackgroundColor: colors.background,
               tabBarInactiveBackgroundColor: colors.border,
-              headerShown: false,
+              headerShown: true,
               tabBarActiveTintColor: colors.primary,
               tabBarInactiveTintColor: colors.primaryLight,
+              headerTitleStyle: {
+                fontWeight: "bold",
+              },
+              headerTintColor: colors.accent,
+              headerStyle: { backgroundColor: colors.primary },
             }}
           >
             <Tab.Screen
-              name="Quiz"
+              name={localization.gameTitle}
               component={Quiz}
               options={{
+                headerShown: false,
                 tabBarIcon: ({ color, size }) => (
                   <FontAwesome
                     name="question-circle"
@@ -78,7 +84,7 @@ export const Entry = () => {
               }}
             />
             <Tab.Screen
-              name="Settings"
+              name={localization.settingsTitle}
               component={Settings}
               options={{
                 tabBarIcon: ({ color, size }) => (

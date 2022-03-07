@@ -1,13 +1,13 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { PickBase } from "../components";
-import { base, text } from "../styles";
+import { base } from "../styles";
 import { settings } from "../config";
 import { useQuizProvider } from "../hooks";
 
 export const Settings: React.FC = () => {
   const {
-    colors,
     setTheme,
     theme,
     lang,
@@ -15,56 +15,49 @@ export const Settings: React.FC = () => {
     localization,
     setNumberOfQ,
     numberOfQ,
+    category,
+    setCategory,
   } = useQuizProvider() || {};
-
-  const SettingsHeader = ({ header }: { header: string }) => (
-    <Text
-      style={[
-        text.base,
-        settingStyle.box,
-        { color: colors.text, backgroundColor: colors.primaryLight },
-      ]}
-    >
-      {header}
-    </Text>
-  );
 
   return (
     <ScrollView style={[base.containerTab]}>
-      <View>
-        <SettingsHeader header={localization.themeSettings} />
-        <PickBase<"light" | "dark">
-          {...{
-            option: theme,
-            setOption: setTheme,
-            pickOptions: ["dark", "light"],
-          }}
-        />
-      </View>
-      <View>
-        <SettingsHeader header={localization.langSetting} />
-        <PickBase<"en" | "bg">
-          {...{
-            option: lang,
-            setOption: setLang,
-            pickOptions: settings.languages as ("en" | "bg")[],
-          }}
-        />
-      </View>
-      <View>
-        <SettingsHeader header={localization.numberOfQuestions} />
-        <PickBase<"random" | number>
-          {...{
-            option: numberOfQ,
-            setOption: setNumberOfQ,
-            pickOptions: settings.numberOfQuestions as (number | "random")[],
-          }}
-        />
-      </View>
+      <PickBase<"light" | "dark">
+        {...{
+          header: localization.themeSettings,
+          option: theme,
+          setOption: setTheme,
+          pickOptions: ["dark", "light"],
+          isToggled: true,
+        }}
+      />
+      <PickBase<"en" | "bg">
+        {...{
+          header: localization.langSetting,
+          option: lang,
+          setOption: setLang,
+          pickOptions: settings.languages as ("en" | "bg")[],
+        }}
+      />
+      <PickBase<"random" | number>
+        {...{
+          header: localization.numberOfQuestions,
+          option: numberOfQ,
+          setOption: setNumberOfQ,
+          pickOptions: settings.numberOfQuestions as (number | "random")[],
+          isToggled: true,
+        }}
+      />
+      <PickBase<string>
+        {...{
+          header: localization.category,
+          option: category,
+          setOption: setCategory,
+          pickOptions: settings.categories.map(c => c.name),
+          pickWidth: { minWidth: "80%" },
+        }}
+      />
+      {/** Empty jsx to fill space after next button on overflow content */}
+      <View style={{ padding: 20 }} />
     </ScrollView>
   );
 };
-
-const settingStyle = StyleSheet.create({
-  box: { textAlign: "center", padding: 15, margin: 5, borderRadius: 15 },
-});

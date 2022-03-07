@@ -16,7 +16,7 @@ import {
 } from "../components";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { QuizState } from "../contracts";
-import { base } from "../styles";
+import { base, text } from "../styles";
 import { getData, storeData } from "../store";
 import { HotObj } from "../utils";
 import { useInterval, useQuizProvider } from "../hooks";
@@ -248,10 +248,28 @@ export const Quiz: React.FC = () => {
     </View>
   ) : (
     <ScrollView style={[base.containerTab]}>
-      <ProgressBar {...{ progress, upper: questions.length }} />
+      {!showScoreModal ?
+        <>
+          <View>
+            <Text style={[text.base, { color: colors.primaryLight, opacity: 0.8 }]}>
+              {localization.lives}:{" "}
+              {livesIcons.map((lIcon, icoIndex) => (
+                <MaterialCommunityIcons
+                  name={lIcon}
+                  key={`${questions[currState.questionIndx]?.question}-${lIcon}-${icoIndex}`}
+                  style={{
+                    color: colors.error,
+                    fontSize: 20,
+                  }}
+                />
+              ))}
+            </Text>
+          </View>
+          <ProgressBar {...{ progress, upper: questions.length }} />
+        </>
+        : null}
       <Question
         {...{
-          livesIcons,
           show: !showScoreModal,
           score,
           currQIndx: questionIndx,

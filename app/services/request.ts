@@ -1,4 +1,21 @@
-export const request = async ({
+export type HttpSuccessResponse<T> = {
+  status: 200;
+  elapsed: number;
+  result: T;
+};
+
+export type HttpErrorResponse<T> = {
+  error: string;
+  stack?: string;
+  elapsed: number;
+  status: number;
+  result?: T;
+  configuredTimeout: number;
+};
+
+export type HttpResponse<T> = HttpSuccessResponse<T> | HttpErrorResponse<T>;
+
+export const request = async <Result = Record<string, unknown>>({
   url,
   timeout = 300,
   parser = "json",
@@ -12,7 +29,7 @@ export const request = async ({
   method?: string;
   payload?: Record<string, unknown>;
   headers?: Record<string, string>;
-}) => {
+}): Promise<HttpResponse<Result>> => {
   const start = Date.now();
   const elapsed = () => Date.now() - start;
   const ac = new AbortController();
@@ -27,20 +44,16 @@ export const request = async ({
       ...(payload && { body: JSON.stringify(payload) }),
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const res = await raw[parser]();
+    const res = await raw[parser]() as Result;
     return {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      status: 200,
       result: res,
       elapsed: elapsed(),
-      status: raw.status || 200,
     };
   } catch (error) {
     if ((error as Error)?.message === "Aborted") {
       return {
         error: "Request timed out",
-        method,
-        url,
         status: 408,
         stack: new Error().stack,
         configuredTimeout: timeout,
@@ -49,8 +62,6 @@ export const request = async ({
     }
     return {
       error: (error as Error)?.message,
-      method,
-      url,
       status: 500,
       stack: (error as Error)?.stack,
       configuredTimeout: timeout,

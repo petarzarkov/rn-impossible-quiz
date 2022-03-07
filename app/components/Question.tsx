@@ -6,7 +6,6 @@ import { text } from "../styles";
 import { useQuizProvider } from "../hooks";
 
 export const Question: React.FC<{
-  livesIcons: string[];
   show?: boolean;
   score: number;
   currQIndx: number;
@@ -15,7 +14,6 @@ export const Question: React.FC<{
   currAnswer: string | null;
   validateAnswer: (answ: string) => void;
 }> = ({
-  livesIcons,
   show = true,
   score,
   currQIndx,
@@ -53,8 +51,13 @@ export const Question: React.FC<{
             </Text>{" "}
             / {questions.length}
           </Text>
-          <Text style={[text.base, { color: colors.primaryLight }]}>
-            {localization.score}: {score}
+          <Text>
+            <Text style={[text.base, { color: colors.primaryLight }]}>
+              {`${localization.score}: `}
+            </Text>
+            <Text style={[text.base, { color: colors.accent }]}>
+              {score}
+            </Text>
           </Text>
         </View>
         <View>
@@ -65,21 +68,6 @@ export const Question: React.FC<{
         <View>
           <Text style={[text.base, { color: colors.primaryLight }]}>
             {localization.category}: {questions[currQIndx]?.category}
-          </Text>
-        </View>
-        <View>
-          <Text style={[text.base, { color: colors.primaryLight }]}>
-            {localization.lives}:{" "}
-            {livesIcons.map((lIcon, icoIndex) => (
-              <MaterialCommunityIcons
-                name={lIcon}
-                key={`${questions[currQIndx]?.question}-${lIcon}-${icoIndex}`}
-                style={{
-                  color: colors.error,
-                  fontSize: 20,
-                }}
-              />
-            ))}
           </Text>
         </View>
         <Text

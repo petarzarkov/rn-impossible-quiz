@@ -12,6 +12,7 @@ export class QuizProvider extends React.Component {
     theme: "dark",
     numberOfQ: "random",
     lang: "en",
+    category: "All",
     colors: Dark,
     localization: localization.en,
     isLoading: false,
@@ -24,7 +25,7 @@ export class QuizProvider extends React.Component {
 
   refreshQuestions = async () => {
     this.setState({ isLoading: true });
-    const newQuestions = await requests.fetchQuestions(this.state.numberOfQ);
+    const newQuestions = await requests.fetchQuestions(this.state.numberOfQ, this.state.category);
     if (newQuestions) {
       this.setState({ questions: newQuestions });
       void storeData("latest_questions", JSON.stringify(newQuestions));
@@ -46,6 +47,7 @@ export class QuizProvider extends React.Component {
           numberOfQ: settings.numberOfQ,
         }),
         ...(settings.lang && { lang: settings.lang }),
+        ...(settings.category && { category: settings.category }),
       });
     }
 
@@ -58,11 +60,22 @@ export class QuizProvider extends React.Component {
     this.setState({ questions, isLoading: false });
   }
 
+  setCategory = (c: string) => {
+    this.setState({ category: c });
+    void storeData("latest_settings", {
+      theme: this.state.theme,
+      numberOfQ: this.state.numberOfQ,
+      lang: this.state.lang,
+      category: c,
+    });
+  };
+
   setLang = (l: "bg" | "en") => {
     this.setState({ lang: l, localization: localization[l] });
     void storeData("latest_settings", {
       theme: this.state.theme,
       numberOfQ: this.state.numberOfQ,
+      category: this.state.category,
       lang: l,
     });
   };
@@ -72,6 +85,7 @@ export class QuizProvider extends React.Component {
     void storeData("latest_settings", {
       theme: this.state.theme,
       numberOfQ: n,
+      category: this.state.category,
       lang: this.state.lang,
     });
   };
@@ -80,6 +94,7 @@ export class QuizProvider extends React.Component {
     this.setState({ theme: t, colors: getTheme(t).colors });
     void storeData("latest_settings", {
       theme: t,
+      category: this.state.category,
       numberOfQ: this.state.numberOfQ,
       lang: this.state.lang,
     });
@@ -90,6 +105,7 @@ export class QuizProvider extends React.Component {
       <QuizContext.Provider
         value={{
           ...this.state,
+          setCategory: this.setCategory,
           storeQuestionsInPlace: this.storeQuestions,
           refreshQuestions: this.refreshQuestions,
           setTheme: this.setTheme,

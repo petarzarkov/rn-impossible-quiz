@@ -6,6 +6,7 @@ export type QuizSettings = {
   theme: "light" | "dark";
   lang: "en" | "bg";
   numberOfQ: "random" | number;
+  category: string;
 };
 
 export type QuizBaseProvider = Expand<
@@ -19,6 +20,7 @@ export type QuizBaseProvider = Expand<
 
 export type QuizContextState = Expand<
 QuizBaseProvider & {
+  setCategory: (category: string) => void;
   setTheme: (theme: "light" | "dark") => void;
   setLang: (lang: "en" | "bg") => void;
   setNumberOfQ: (n: "random" | number) => void;

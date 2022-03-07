@@ -1,39 +1,51 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ViewStyle } from "react-native";
 import { useQuizProvider } from "../../hooks";
+import Dropdown from "../Dropdown";
 import { ButtonBase } from "./ButtonBase";
 
 export function PickBase<Option extends string | number>({
   pickOptions,
   option,
   setOption,
+  header,
+  pickWidth,
+  isToggled,
 }: {
   option: Option;
   setOption: (opt: Option) => void;
   pickOptions: Option[];
   children?: React.ReactNode;
+  header: string;
+  pickWidth?: ViewStyle;
+  isToggled?: boolean;
 }): React.ReactElement | null {
   const { colors } = useQuizProvider() || {};
   return (
-    <View style={[styles.pickContainer]}>
-      {pickOptions.map((l, ind) => (
-        <ButtonBase
-          {...{
-            colors,
-            key: `${l}-${ind}`,
-            disabled: option === l,
-            btnStyle: [
-              styles.box,
-              {
-                backgroundColor:
-                  option === l ? colors.primaryLight : "transparent",
-              },
-            ],
-            btnText: l,
-            handlePress: () => setOption(l),
-          }}
-        />
-      ))}
+    <View>
+      <Dropdown label={header} isToggled={isToggled} >
+        <View style={[styles.pickContainer]}>
+          {pickOptions.map((l, ind) => (
+            <ButtonBase
+              {...{
+                colors,
+                key: `${l}-${ind}`,
+                disabled: option === l,
+                btnStyle: [
+                  styles.box,
+                  pickWidth,
+                  {
+                    backgroundColor:
+                  option === l ? colors.accent : "transparent",
+                  },
+                ],
+                btnText: l,
+                handlePress: () => setOption(l),
+              }}
+            />
+          ))}
+        </View>
+      </Dropdown>
     </View>
   );
 }
@@ -48,7 +60,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     marginHorizontal: "1%",
     marginBottom: 6,
-    minWidth: "48%",
+    minWidth: "40%",
     textAlign: "center",
   },
   pickContainer: {
@@ -56,5 +68,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-around",
+    padding: 4,
   },
 });
